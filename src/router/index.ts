@@ -1,0 +1,73 @@
+import {createRouter, createWebHashHistory} from 'vue-router'
+import NProgress from 'nprogress'
+
+const router = createRouter({
+  history: createWebHashHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/',
+      name: 'layout',
+      component: () => import('@/layout/index.vue'),
+      children: [
+        {
+          path: '/home',
+          name: 'home',
+          meta: {
+            title: 'SaaS短链接平台'
+          },
+          component: () => import('@/views/home/index.vue'),
+          children: [
+            {
+              path: '',
+              name: 'empty',
+              meta: {
+                title: '首页'
+              },
+              component: () => import('@/views/home/empty/index.vue')
+            },
+            {
+              path: '/home/user',
+              name: 'user',
+              meta: {
+                title: '用户信息'
+              },
+              component: () => import('@/views/home/user/index.vue')
+            },
+            {
+              path: '/home/dashboard',
+              name: 'dashboard',
+              meta: {
+                title: '仪表盘'
+              },
+              component: () => import('@/views/home/dashboard/index.vue')
+            }
+          ]
+        }
+      ]
+    },
+    // {
+    //   path: '/login',
+    //   name: 'login',
+    //   meta: {
+    //     title: '用户登录页'
+    //   },
+    //   component: () => import('null')
+    // }
+  ],
+})
+
+
+
+router.beforeEach((to) => {
+  if (to.meta?.title) {
+    document.title = to.meta.title as string;
+  }
+
+  NProgress.start();
+})
+
+
+router.afterEach(() => {
+  NProgress.done();
+})
+export default router
