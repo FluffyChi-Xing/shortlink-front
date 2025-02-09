@@ -2,7 +2,7 @@
 import HomeHeader from "@/components/home/HomeHeader.vue";
 import HomeAside from "@/components/home/HomeAside.vue";
 import HomeMenu from "@/components/home/HomeMenu.vue";
-import {ref, watch} from "vue";
+import {onMounted, ref, watch} from "vue";
 import BaseDialog from "@/components/base/BaseDialog.vue";
 import HomeHeaderFunctionalBanner from "@/components/home/HomeHeaderFunctionalBanner.vue";
 import BaseDraggableComp from "@/components/draggable/BaseDraggableComp.vue";
@@ -34,28 +34,28 @@ const groupList = ref<ShortLinkTypes.testGroupLinkTypes[]>([
     id: 1,
     name: '默认分组1',
     count: 10,
-    url: 'short-link',
+    url: 'short-link1',
     selected: false
   },
   {
     id: 2,
     name: '默认分组2',
     count: 10,
-    url: 'short-link',
+    url: 'short-link2',
     selected: false
   },
   {
     id: 3,
     name: '默认分组3',
     count: 10,
-    url: 'short-link',
+    url: 'short-link3',
     selected: false
   },
   {
     id: 4,
     name: '默认分组4',
     count: 10,
-    url: 'short-link',
+    url: 'short-link4',
     selected: false
   },
 ]);
@@ -90,9 +90,20 @@ function checkSelected() {
     groupList.value.forEach(item => {
       item.selected= false; // 如果当前页面不为短链接分组详情页面，则将全部的分组选中状态设置为false
     })
+  } else {
+    groupList.value.forEach(item => {
+      if (route.path === $const.DEFAULT_ROUTER_PREFIX + item.url) {
+        item.selected = true;
+      }
+    })
   }
 }
 
+
+
+onMounted(() => {
+  checkSelected();
+})
 
 watch(() => route.path, () => {
   checkSelected();

@@ -64,7 +64,7 @@ function handleRoute(path: string) {
       <!-- other functional components -->
       <div
           :class="flag ? 'flex' : 'hidden'"
-          class="w-full h-full font-bold justify-end overflow-hidden"
+          class="w-full h-full font-bold justify-end items-center overflow-hidden"
       >
         <el-tooltip
             effect="dark"
@@ -73,13 +73,14 @@ function handleRoute(path: string) {
         >
           <el-icon
               @click="emits('statistics', props?.groupName)"
-              :size="20" class="mr-2"
+              :size="16"
+              class="mr-2"
           >
             <PieChart class="hover:text-theme-color" />
           </el-icon>
         </el-tooltip>
         <el-dropdown>
-          <el-icon :size="20">
+          <el-icon :size="16">
             <Setting class="hover:text-theme-color" />
           </el-icon>
           <template #dropdown>
