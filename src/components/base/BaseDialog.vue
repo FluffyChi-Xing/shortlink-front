@@ -20,7 +20,8 @@ const props = withDefaults(defineProps<{
   alignCenter: false,
   showClose: false,
   fullscreen: false,
-  visible: false
+  visible: false,
+  modal: true
 })
 
 

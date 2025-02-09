@@ -40,6 +40,14 @@ const router = createRouter({
                 title: '仪表盘'
               },
               component: () => import('@/views/home/dashboard/index.vue')
+            },
+            {
+              path: '/home/:groupName',
+              name: 'space',
+              meta: {
+                title: '短链接分组'
+              },
+              component: () => import('@/views/home/space/index.vue')
             }
           ]
         }

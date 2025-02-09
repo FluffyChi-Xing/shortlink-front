@@ -1,5 +1,12 @@
 <script setup lang="ts">
+import {useRouter} from "vue-router";
 
+const router = useRouter();
+
+
+function goHome() {
+  router.push('/home')
+}
 </script>
 
 <template>
@@ -8,6 +15,7 @@
     <div
         style="font-weight: 600;"
         class="w-full h-full flex items-center text-[1.2rem] cursor-pointer text-[#e8e8e8]"
+        @click="goHome"
     >
       SaaS短链接服务平台
     </div>

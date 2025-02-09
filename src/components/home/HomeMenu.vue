@@ -2,6 +2,7 @@
 import {onMounted, ref, watch} from "vue";
 import type {MenuTypes} from "@/componsables/apis/MenuTypes";
 import {useRoute, useRouter} from "vue-router";
+import {$const} from "@/componsables/const.ts";
 
 
 const router = useRouter();
@@ -32,7 +33,9 @@ function checkMenuHighLight(path: string, routeList: MenuTypes.MenuType[]) {
   let currentRoute = path;
   routeList?.forEach((item: MenuTypes.MenuType) => {
     if (item?.children?.length > 0) {
-      checkMenuHighLight(currentRoute, item.children);
+      checkMenuHighLight(currentRoute, item?.children);
+    } else if (!$const.ROUTE_WHITE_LIST?.includes(currentRoute)){
+      currentIndex.value = ''
     } else {
       if (item?.route === currentRoute) {
         currentIndex.value = item.index;

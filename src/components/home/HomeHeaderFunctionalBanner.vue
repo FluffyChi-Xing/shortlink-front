@@ -16,12 +16,12 @@ const router = useRouter();
       style="font-size: 15px;font-weight: 600;outline: none;"
       class="w-auto h-full flex items-center"
   >
-    <div class="text-[#e8e8e8] cursor-pointer px-4 hover:text-white hover:decoration-solid">
+    <div class="text-[#e8e8e8] cursor-pointer px-4 hover:text-white">
       Github
     </div>
     <el-dropdown>
       <template #default>
-        <div class="text-[#e8e8e8] el-dropdown-link cursor-pointer px-4 hover:text-white hover:decoration-solid">
+        <div class="text-[#e8e8e8] el-dropdown-link cursor-pointer px-4 hover:text-white">
           {{ username }}
         </div>
       </template>

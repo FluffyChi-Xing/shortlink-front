@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     BaseCard: typeof import('./src/components/base/BaseCard.vue')['default']
     BaseDialog: typeof import('./src/components/base/BaseDialog.vue')['default']
+    BaseDraggableComp: typeof import('./src/components/draggable/BaseDraggableComp.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
@@ -25,6 +26,7 @@ declare module 'vue' {
     ElMain: typeof import('element-plus/es')['ElMain']
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
+    ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     HomeAside: typeof import('./src/components/home/HomeAside.vue')['default']
     HomeHeader: typeof import('./src/components/home/HomeHeader.vue')['default']
@@ -32,5 +34,6 @@ declare module 'vue' {
     HomeMenu: typeof import('./src/components/home/HomeMenu.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ShortLinkItem: typeof import('./src/components/shortlink/ShortLinkItem.vue')['default']
   }
 }
