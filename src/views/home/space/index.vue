@@ -25,6 +25,7 @@ const currentPage = ref<number>(1);
           >
             <el-table
                 fit
+                stripe
                 :header-cell-style="{ background: '#EEF0F5', textAlign: 'center', color: 'black', fontWeight: 'bold' }"
             >
               <el-table-column label="短链接信息" width="300" show-overflow-tooltip />

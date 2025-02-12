@@ -10,6 +10,7 @@ import ShortLinkItem from "@/components/shortlink/ShortLinkItem.vue";
 import type {ShortLinkTypes} from "@/componsables/apis/ShortLinkTypes";
 import {$const} from "@/componsables/const.ts";
 import {useRoute} from "vue-router";
+import SpaceAccessHistory from "@/components/space/SpaceAccessHistory.vue";
 
 
 
@@ -29,6 +30,7 @@ const groupStat = ref<boolean>(false);
 const groupEdit = ref<boolean>(false);
 const groupDel = ref<boolean>(false);
 const currentGroupIndex = ref<string | number>();
+const groupCount = ref<number>(0);
 const groupList = ref<ShortLinkTypes.testGroupLinkTypes[]>([
   {
     id: 1,
@@ -189,13 +191,24 @@ watch(() => route.path, () => {
   <!-- short-link group statistics dialog -->
   <BaseDialog
       v-model:visible="groupStat"
-      title="统计分组"
+      :title="`统计 ${ currentGroupIndex } 分组的信息, 共计 ${ groupCount } 条短连`"
+      width="500"
+      :draggable="true"
   >
     <template #body>
-      <!-- TODO: 统计组件待开发 -->
-      <div class="w-full h-auto flex flex-col text-red-500">
-        {{ currentGroupIndex }} 的 统计信息
-      </div>
+       <el-scrollbar height="400">
+         <div class="w-full h-full flex flex-col">
+           <el-tabs type="border-card" class="w-full">
+             <el-tab-pane label="访问数据">
+               <!-- 访问数据组件 -->
+             </el-tab-pane>
+             <el-tab-pane label="历史记录">
+               <!-- 历史记录组件 -->
+               <SpaceAccessHistory />
+             </el-tab-pane>
+           </el-tabs>
+         </div>
+       </el-scrollbar>
     </template>
     <template #footer>
       <div class="w-full h-auto flex justify-end items-center">
