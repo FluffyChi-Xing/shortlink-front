@@ -67,8 +67,10 @@ watch(() => route.path, () => {
   <div class="w-full h-auto flex flex-col">
     <el-menu
         :default-active="currentIndex"
-        active-text-color="#3464E0"
+        active-text-color="#ffd04b"
         mode="vertical"
+        text-color="#fff"
+        background-color="#021c27"
     >
       <el-menu-item
           v-for="(item, index) in menuItemList"

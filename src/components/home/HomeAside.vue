@@ -24,12 +24,11 @@ function groupCreateHandler() {
       <div class="w-full h-full flex flex-col">
         <!-- header -->
         <div
-            style="box-sizing: border-box;border-bottom: 1px solid #E6E6E6;"
-            class="w-full h-14 flex gap-4 px-4 items-center justify-center"
+            style="box-sizing: border-box;border-bottom: 1px solid #1a2e3a;"
+            class="w-full h-14  bg-[#021c27] flex gap-4 px-4 items-center justify-center"
         >
           <div
-              style="font-weight: 600;"
-              class="w-full h-auto text-[15px] leading-[24px] flex items-end"
+              class="w-full h-auto text-white text-[15px] font-bold leading-[24px] flex items-end"
           >
             短链分组
             <div class="text-[10px] pl-1">共 {{props?.count}} 组</div>
