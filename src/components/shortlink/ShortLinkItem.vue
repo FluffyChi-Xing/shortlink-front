@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import {ref, watch} from "vue";
 import {PieChart, Setting} from "@element-plus/icons-vue";
 import {useRouter} from "vue-router";
 import {$const} from "@/componsables/const.ts";
@@ -18,28 +18,34 @@ const props = withDefaults(defineProps<{
 
 const flag = ref<boolean>(false);
 const router = useRouter();
+const selected = ref<boolean>(props?.selected);
 const emits = defineEmits(['statistics', 'edit', 'delete', 'select']);
 
 
 
-function handleRoute(path: string) {
+function handleRoute(path: string | undefined) {
   emits('select', props?.groupName)
   if (path) {
     router.push($const.DEFAULT_ROUTER_PREFIX + path)
   }
 }
+
+
+watch(() => props?.selected, (val: boolean) => {
+  selected.value = val;
+})
 </script>
 
 <template>
   <div
       @mouseenter="flag = true"
       @mouseleave="flag = false"
-      @click="handleRoute(url)"
-      class="w-full h-14 grid bg-white grid-cols-5 gap-1 items-center cursor-move p-4 my-2 hover:shadow-md hover:bg-theme-light"
+      @click="handleRoute(props.url)"
+      class="w-full h-14 grid grid-cols-5 gap-1 items-center p-4 my-2 hover:shadow-md hover:bg-theme-light"
       :class="selected ? 'bg-theme-light' : 'bg-white'"
   >
     <!-- icon -->
-    <div class="w-auto h-auto flex">
+    <div class="w-auto h-auto flex cursor-move">
       <img src="@/assets/img/drag.png" alt="拖动" style="width: 10px;height: 10px;background-repeat: no-repeat;">
     </div>
     <!-- groupName -->
@@ -76,7 +82,7 @@ function handleRoute(path: string) {
               :size="16"
               class="mr-2"
           >
-            <PieChart class="hover:text-theme-color" />
+            <PieChart class="hover:text-theme-color cursor-pointer" />
           </el-icon>
         </el-tooltip>
         <el-dropdown>

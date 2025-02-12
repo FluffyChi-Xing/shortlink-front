@@ -32,7 +32,7 @@ const menuItemList = ref<MenuTypes.MenuType[]>(
 function checkMenuHighLight(path: string, routeList: MenuTypes.MenuType[]) {
   let currentRoute = path;
   routeList?.forEach((item: MenuTypes.MenuType) => {
-    if (item?.children?.length > 0) {
+    if (item?.children?.length !== undefined && item?.children?.length > 0) {
       checkMenuHighLight(currentRoute, item?.children);
     } else if (!$const.ROUTE_WHITE_LIST?.includes(currentRoute)){
       currentIndex.value = ''
@@ -45,7 +45,7 @@ function checkMenuHighLight(path: string, routeList: MenuTypes.MenuType[]) {
 }
 
 
-function handleMenuClick(path: string | null) {
+function handleMenuClick(path: string | undefined) {
   if (path) {
     router.push(path);
     checkMenuHighLight(path, menuItemList.value);
@@ -67,7 +67,7 @@ watch(() => route.path, () => {
   <div class="w-full h-auto flex flex-col">
     <el-menu
         :default-active="currentIndex"
-        active-text-color="#409EFF"
+        active-text-color="#3464E0"
         mode="vertical"
     >
       <el-menu-item
@@ -75,7 +75,7 @@ watch(() => route.path, () => {
           :key="index"
           :index="item.index"
           :route="item.route"
-          @click="handleMenuClick(item.route)"
+          @click="handleMenuClick(item?.route)"
       >
         <template #default>
           <span>{{ item.label }}</span>

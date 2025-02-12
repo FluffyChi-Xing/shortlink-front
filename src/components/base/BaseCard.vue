@@ -1,6 +1,7 @@
 <script setup lang="ts">
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   shadows?: boolean
+  title?: string;
 }>(),{
   shadows: false
 });
@@ -9,7 +10,8 @@ withDefaults(defineProps<{
 <template>
   <el-card
       :shadow="shadows"
-      class="w-auto h-auto flex"
+      class="w-auto h-auto flex flex-col"
+      :header="title"
   >
     <template #default>
       <slot name="body" />
