@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    BaseCaptcha: typeof import('./src/components/base/BaseCaptcha.vue')['default']
     BaseCard: typeof import('./src/components/base/BaseCard.vue')['default']
     BaseDialog: typeof import('./src/components/base/BaseDialog.vue')['default']
     BaseDraggableComp: typeof import('./src/components/draggable/BaseDraggableComp.vue')['default']

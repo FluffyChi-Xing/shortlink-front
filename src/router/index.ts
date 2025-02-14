@@ -53,14 +53,14 @@ const router = createRouter({
         }
       ]
     },
-    // {
-    //   path: '/login',
-    //   name: 'login',
-    //   meta: {
-    //     title: '用户登录页'
-    //   },
-    //   component: () => import('null')
-    // }
+    {
+      path: '/login',
+      name: 'login',
+      meta: {
+        title: '用户登录页'
+      },
+      component: () => import('@/views/login/index.vue')
+    }
   ],
 })
 
