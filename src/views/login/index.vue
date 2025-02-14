@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import {vantaFactory} from "@/utils/VantaUtil.ts";
+import {onBeforeUnmount, onMounted, onUnmounted, ref} from "vue";
+import {destroyVantaClient, vantaFactory} from "@/utils/VantaUtil.ts";
 import type {VantaJsTypes} from "@/componsables/apis/VantaJsTypes";
 import {VantaEnums} from "@/componsables/enums/VantaEnums.ts";
 import * as THREE from 'three';
 import BaseCard from "@/components/base/BaseCard.vue";
-import { useRouter } from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {$const} from "@/componsables/const.ts";
 import BaseCaptcha from "@/components/base/BaseCaptcha.vue";
 
 
 /** ====== 登录-start ====== */
 const router = useRouter();
+const route = useRoute();
+let vantaEffect = null;
 // 登录背景初始化
 const options = ref<VantaJsTypes.VantaFuncParamsTypes>({
   el: '#loginContainer',
@@ -26,7 +28,8 @@ const options = ref<VantaJsTypes.VantaFuncParamsTypes>({
   THREE: THREE
 });
 function initBackground() {
-  return vantaFactory(VantaEnums.FOG, options.value);
+  vantaEffect = vantaFactory(VantaEnums.FOG, options.value);
+  return vantaEffect;
 }
 
 
@@ -47,10 +50,16 @@ function handleRefreshCaptcha() {
 }
 
 async function handleLogin() {
+  // destroyVantaClient(VantaEnums.FOG, options);
   await router.push('/home');
   // TODO: 校验
   // TODO: 调用登录接口
 }
+
+
+onBeforeUnmount(() => {
+  destroyVantaClient(vantaEffect);
+})
 /** ====== 登录-end ====== */
 </script>
 
