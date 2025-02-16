@@ -20,4 +20,32 @@ export namespace UserTypes {
          */
         email: string;
     }
+
+
+
+    export interface UserLoginInfoType {
+        username: string;
+
+        userId?: string | number;
+
+        key: string;
+
+        token: string;
+
+        refreshToken: string;
+    }
+
+
+
+    export interface UserLoginReqDtoType {
+        username: string;
+
+        password: string;
+
+        captcha: string;
+
+        captchaKey: string;
+
+        userId?: string;
+    }
 }

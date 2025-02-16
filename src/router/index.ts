@@ -1,5 +1,6 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
 import NProgress from 'nprogress'
+import {getToken} from "@/componsables/request.ts";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -66,12 +67,18 @@ const router = createRouter({
 
 
 
-router.beforeEach((to) => {
+router.beforeEach(async (to,from, next) => {
+  if (to.path === '/login') {
+    next();
+  }
+  if (getToken() === null) {
+    next('/login');
+  }
   if (to.meta?.title) {
     document.title = to.meta.title as string;
   }
-
   NProgress.start();
+  next();
 })
 
 

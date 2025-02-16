@@ -47,8 +47,8 @@ onMounted(() => {
 })
 
 
-watch(() => props?.captchaUrl, (val: string) => {
-  picUrl.value = val;
+watch(() => props?.captchaUrl, (val) => {
+  picUrl.value = val as string;
   // 验证码刷新后重新绘制验证码
   captchaGenerator();
 })

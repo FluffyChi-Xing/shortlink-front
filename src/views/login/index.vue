@@ -8,12 +8,21 @@ import BaseCard from "@/components/base/BaseCard.vue";
 import {useRoute, useRouter} from "vue-router";
 import {$const} from "@/componsables/const.ts";
 import BaseCaptcha from "@/components/base/BaseCaptcha.vue";
+import {$api} from "@/componsables/api.ts";
+import {getCaptchaCodeKey, setCaptchaCodeKey, setUserInfo} from "@/componsables/apis/LoginPageApis.ts";
+import type {UserTypes} from "@/componsables/apis/UserTypes";
+import {$message} from "@/componsables/element-plus.ts";
 
 
 /** ====== 登录-start ====== */
 const router = useRouter();
 const route = useRoute();
-let vantaEffect = null;
+let vantaEffect: any = null;
+// 登录逻辑块
+const username = ref<string>();
+const password = ref<string>();
+const captcha = ref<string>($const.DEFAULT_CAPTCHA_URL);
+const code = ref<string>();
 // 登录背景初始化
 const options = ref<VantaJsTypes.VantaFuncParamsTypes>({
   el: '#loginContainer',
@@ -33,28 +42,66 @@ function initBackground() {
 }
 
 
-onMounted(() => {
-  initBackground();
-});
+async function getCaptchaHandler() {
+  await $api.getCaptcha().then((res: any) => {
+    captcha.value = res.data.base64;
+    // 存储验证码codeKey
+    setCaptchaCodeKey(res.data.captchaCodeKey);
+    // console.log(res.data)
+  }).catch((error: any) => {
+    console.error(error)
+  })
+}
 
 
-// 登录逻辑块
-const username = ref<string>();
-const password = ref<string>();
-const captcha = ref<string>($const.DEFAULT_CAPTCHA_URL);
-const code = ref<string>();
 
-function handleRefreshCaptcha() {
+async function handleRefreshCaptcha() {
   console.log('刷新验证码');
-  // TODO: 调用获取验证码接口
+  await getCaptchaHandler();
 }
 
 async function handleLogin() {
   // destroyVantaClient(VantaEnums.FOG, options);
-  await router.push('/home');
+  // await router.push('/home');
   // TODO: 校验
-  // TODO: 调用登录接口
+  // 组装 UserLoginReqDto
+  let userLoginReqDto = {
+    username: username.value as string,
+    password: password.value as string,
+    captcha: code.value as string,
+    captchaKey: getCaptchaCodeKey() ? getCaptchaCodeKey() : '',
+  };
+  await $api.userLogin(
+      userLoginReqDto
+  ).then((res: any) => {
+    console.log(res.data);
+    // 组装 UserLoginInfo
+    let userInfo: UserTypes.UserLoginInfoType = {
+      username: username.value as string,
+      key: res.data.key,
+      token: res.data.token,
+      refreshToken: res.data.refreshToken
+    };
+    setUserInfo(userInfo);
+    router.push('/home');
+    $message({
+      message: '登陆成功',
+      type: "success"
+    });
+  }).catch((error: any) => {
+    console.error(error)
+    $message({
+      message: '登录失败',
+      type: "error"
+    });
+  })
 }
+
+
+onMounted(async () => {
+  initBackground();
+  await getCaptchaHandler();
+});
 
 
 onBeforeUnmount(() => {
@@ -72,7 +119,7 @@ onBeforeUnmount(() => {
     <div class="w-auto h-20 flex font-bold text-white text-[40px] mt-[10%]">S a a S 短 链 接 平 台</div>
     <!-- login form card -->
     <BaseCard
-        class="w-[600px] h-auto absolute top-[26%]"
+        class="w-[500px] h-auto absolute top-[26%]"
     >
       <template #body>
         <div class="w-full h-auto grid grid-cols-3 gap-4">
@@ -114,8 +161,6 @@ onBeforeUnmount(() => {
                       <el-input
                           v-model="code"
                           clearable
-                          show-word-limit
-                          maxlength="6"
                           class="w-full"
                       >
                         <template #prepend>
@@ -126,8 +171,8 @@ onBeforeUnmount(() => {
                     <div class="w-full h-auto flex items-center overflow-hidden">
                       <BaseCaptcha
                           :captcha-url="captcha"
-                          width="100"
-                          height="32"
+                          :width="100"
+                          :height="32"
                           @refresh="handleRefreshCaptcha"
                       />
                     </div>
