@@ -13,4 +13,7 @@ export const DEFAULT_CAPTCHA_URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg
 
 export const USER_LOGIN_STORAGE_KET = 'shortLink:userinfo';
 
+// 刷新周期 30min
+export const REFRESH_TOKEN_GAP = 30 * 60 * 1000;
+
 

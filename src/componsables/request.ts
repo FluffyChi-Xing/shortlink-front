@@ -1,30 +1,29 @@
 import {ofetch} from "ofetch";
 import {$enum} from "@/componsables/enums.ts";
 import {$const} from "@/componsables/const.ts";
+import {$message} from "@/componsables/element-plus.ts";
 
 
 
 // TODO request 和 response 拦截器无法发挥正常作用，待修复
-export async function $request(url: string, options?: any, body?: any, baseUrl?: string, headers?: any) {
+export async function $request(url: string, options?: any, body?: any, baseUrl?: string, header?: any) {
     return await ofetch(url, {
         // 请求前预处理
-        async onRequest({ request, options}) {
+        async onRequest() {
             if (url === null || url === undefined) {
                 return Promise.reject('URL不能为空');
             }
             if (options === null || options === undefined) {
                 // 如果没有 options 则默认为 get
-                // TODO options = $enum.RestParamsEnums.GET as string;
+                options = $enum.RestParamsEnums.GET as string;
             }
         },
-        async onResponse({response}) {
-            // 校验响应状态码,如果正确则放行response
-            if (response.status === $enum.HttpCodeEnum.SUCCESS || response.status === $enum.HttpCodeEnum.DEFAULT) {
-                return response;
-            } else {
-                return Promise.reject(response);
-            }
-        },
+        // async onResponse({response}) {
+        //     // 校验响应状态码,如果正确则放行response
+        //     if (response?.data.code !== $enum.HttpCodeEnum.SUCCESS && response.code !== $enum.HttpCodeEnum.DEFAULT) {
+        //         return Promise.reject(response);
+        //     }
+        // },
         headers: {
             'username': getUsername() ? getUsername() : '',
             'token': getToken() ? getToken() : '',
@@ -32,15 +31,23 @@ export async function $request(url: string, options?: any, body?: any, baseUrl?:
             'realName': getRealName()? getRealName() : '',
             'charset': 'utf-8',
             'Access-Control-Allow-Origin': '*',
-            ...headers
+            ...header
         },
         method: options,
         body: body,
         baseURL: baseUrl
     }).then((response) => {
+        // console.log(response)
+        if (response?.code !== $enum.HttpCodeEnum.SUCCESS && response?.code !== $enum.HttpCodeEnum.DEFAULT) {
+            return Promise.reject(response);
+        }
         return Promise.resolve(response);
     }).catch((error: any) => {
         console.error(error);
+        $message({
+           message: '请求错误',
+           type: "error"
+        });
         return Promise.reject(error);
     });
 }
@@ -48,7 +55,7 @@ export async function $request(url: string, options?: any, body?: any, baseUrl?:
 
 
 export function getUsername(): string {
-    return 'null';
+    return JSON.parse(localStorage.getItem($const.USER_LOGIN_STORAGE_KET))?.username as string;
 }
 
 export function getRealName(): string {
@@ -62,5 +69,7 @@ export function getUserId(): string {
 
 
 export function getToken(): string {
-    return JSON.parse(localStorage.getItem($const.USER_LOGIN_STORAGE_KET))?.token;
+    let token: string = JSON.parse(localStorage.getItem($const.USER_LOGIN_STORAGE_KET))?.token;
+    // console.log(token);
+    return token;
 }

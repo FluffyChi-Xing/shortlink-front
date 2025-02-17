@@ -90,10 +90,6 @@ async function handleLogin() {
     });
   }).catch((error: any) => {
     console.error(error)
-    $message({
-      message: '登录失败',
-      type: "error"
-    });
   })
 }
 
@@ -119,7 +115,8 @@ onBeforeUnmount(() => {
     <div class="w-auto h-20 flex font-bold text-white text-[40px] mt-[10%]">S a a S 短 链 接 平 台</div>
     <!-- login form card -->
     <BaseCard
-        class="w-[500px] h-auto absolute top-[26%]"
+        style="width: 600px;"
+        class="h-auto absolute top-[26%]"
     >
       <template #body>
         <div class="w-full h-auto grid grid-cols-3 gap-4">

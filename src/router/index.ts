@@ -71,7 +71,7 @@ router.beforeEach(async (to,from, next) => {
   if (to.path === '/login') {
     next();
   }
-  if (getToken() === null) {
+  if (getToken() === null || getToken() === undefined) {
     next('/login');
   }
   if (to.meta?.title) {

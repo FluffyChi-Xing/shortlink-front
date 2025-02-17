@@ -1,6 +1,6 @@
 import type {UserTypes} from "@/componsables/apis/UserTypes";
 import {$const} from "@/componsables/const.ts";
-import {$request} from "@/componsables/request.ts";
+import {$request, getUsername} from "@/componsables/request.ts";
 import {$enum} from "@/componsables/enums.ts";
 
 
@@ -14,11 +14,7 @@ export async function userLogin(userInfo: UserTypes.UserLoginReqDtoType) {
     formData.append('password', userInfo.password);
     formData.append('captcha', userInfo.captcha);
     formData.append('captchaCodeKey', userInfo.captchaKey);
-    let options = $enum.RestParamsEnums.POST;
-    let headers = {
-      'content-type': 'multipart/form-data'
-    };
-    return await $request( $const.ADMIN_ROUTE_PREFIX + '/login', options, formData, $const.SERVER_HOST, headers);
+    return await $request( $const.ADMIN_ROUTE_PREFIX + '/login', $enum.RestParamsEnums.POST, formData, $const.SERVER_HOST);
 }
 
 export async function userRegister() {
@@ -32,7 +28,26 @@ export async function userLogout() {
 
 
 export async function userRefreshToken() {
-
+    let userInfo: UserTypes.UserLoginInfoType = getUserInfo();
+    let token = null;
+    let key = null;
+    if (userInfo !== null && userInfo !== undefined) {
+        token = userInfo.refreshToken;
+        key = userInfo.key;
+        if (token !== null && key !== null) {
+            let header = {
+                'username': getUsername() ? getUsername() : '',
+            };
+            let formData = new FormData();
+            formData.append('refreshToken', token);
+            formData.append('key', key);
+            return await $request($const.ADMIN_ROUTE_PREFIX + '/refresh', $enum.RestParamsEnums.POST, formData, $const.SERVER_HOST, header );
+        } else {
+            return Promise.reject('token 或 key 不能为空');
+        }
+    } else {
+        return Promise.reject('无法获取到可用的用户信息');
+    }
 }
 
 
@@ -83,6 +98,7 @@ export async function setUserInfo(UserInfo: UserTypes.UserLoginInfoType) {
     if (userInfos !== null) {
         removeUserInfo();
     }
+    console.log(UserInfo)
     localStorage.setItem($const.USER_LOGIN_STORAGE_KET, JSON.stringify(UserInfo));
 }
 
@@ -90,7 +106,7 @@ export async function setUserInfo(UserInfo: UserTypes.UserLoginInfoType) {
 /**
  * 获取用户登录信息
  */
-function getUserInfo() {
+export function getUserInfo() {
     return JSON.parse(localStorage.getItem($const.USER_LOGIN_STORAGE_KET));
 }
 
@@ -98,6 +114,6 @@ function getUserInfo() {
 /**
  * 移除用户登录信息
  */
-function removeUserInfo() {
+export function removeUserInfo() {
     localStorage.removeItem($const.USER_LOGIN_STORAGE_KET);
 }
