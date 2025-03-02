@@ -49,6 +49,14 @@ const router = createRouter({
                 title: '短链接分组'
               },
               component: () => import('@/views/home/space/index.vue')
+            },
+            {
+              path: '/home/recyclebin',
+              name: 'recyclebin',
+              meta: {
+                title: '回收站'
+              },
+              component: () => import('@/views/home/recyclebin/index.vue')
             }
           ]
         }

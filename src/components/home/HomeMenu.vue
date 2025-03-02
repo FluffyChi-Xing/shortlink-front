@@ -24,6 +24,11 @@ const menuItemList = ref<MenuTypes.MenuType[]>(
         index: '3',
         label: '用户信息',
         route: '/home/user'
+      },
+      {
+        index: '4',
+        label: '回收站',
+        route: '/home/recyclebin'
       }
     ]
 );

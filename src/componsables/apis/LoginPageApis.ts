@@ -2,6 +2,7 @@ import type {UserTypes} from "@/componsables/apis/UserTypes";
 import {$const} from "@/componsables/const.ts";
 import {$request, getUsername} from "@/componsables/request.ts";
 import {$enum} from "@/componsables/enums.ts";
+import {LogUtil} from "@/utils/CommonLogUtil.ts";
 
 
 /**
@@ -116,4 +117,15 @@ export function getUserInfo() {
  */
 export function removeUserInfo() {
     localStorage.removeItem($const.USER_LOGIN_STORAGE_KET);
+}
+
+
+/**
+ * 测试 lgo 模块函数
+ */
+export function testLogUtilFunc() {
+    LogUtil.debug('测试 log 模块函数');
+    LogUtil.error('测试 log 模块函数');
+    LogUtil.info('测试 log 模块函数');
+    LogUtil.alert('测试 log 模块函数');
 }

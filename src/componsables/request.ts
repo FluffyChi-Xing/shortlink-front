@@ -53,9 +53,11 @@ export async function $request(url: string, options?: any, body?: any, baseUrl?:
 }
 
 
-
+/**
+ * 从缓存中获取 userInfo 中的 username
+ */
 export function getUsername(): string {
-    return JSON.parse(localStorage.getItem($const.USER_LOGIN_STORAGE_KET))?.username as string;
+    return JSON.parse(localStorage.getItem($const.USER_LOGIN_STORAGE_KET))?.username.toString();
 }
 
 export function getRealName(): string {
@@ -63,13 +65,35 @@ export function getRealName(): string {
 }
 
 
+/**
+ * 从缓存中获取 userId
+ */
 export function getUserId(): string {
     return 'null';
 }
 
 
+/**
+ * 从缓存中获取 token
+ */
 export function getToken(): string {
     let token: string = JSON.parse(localStorage.getItem($const.USER_LOGIN_STORAGE_KET))?.token;
+    // TODO: 调用验证 token 接口 以验证 token 是否过期，修改函数返回值为 boolean
+    // return checkToken(token);
     // console.log(token);
     return token;
+}
+
+
+/**
+ * 校验 token 是否过期
+ * @param token
+ */
+export function checkToken(token: string): boolean {
+    let flag: boolean = false;
+    if (token !== null && token !== undefined) {
+        // TODO: flag = checkTokenHandler(token);
+        return flag;
+    }
+    return flag;
 }

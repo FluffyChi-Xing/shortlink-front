@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import BaseCard from "@/components/base/BaseCard.vue";
 import {CirclePlus, Delete} from "@element-plus/icons-vue";
+import {useRouter} from "vue-router";
 const props = withDefaults(defineProps<{
   count?: number;
 }>(), {
@@ -8,6 +9,7 @@ const props = withDefaults(defineProps<{
 })
 
 const emits = defineEmits(['create']);
+const router = useRouter();
 
 
 /**
@@ -16,6 +18,11 @@ const emits = defineEmits(['create']);
 function groupCreateHandler() {
   emits('create');
 }
+
+
+// function handleRecycleBin() {
+//   router.push('/home/recyclebin')
+// }
 </script>
 
 <template>
@@ -53,18 +60,6 @@ function groupCreateHandler() {
             class="w-full h-auto flex flex-col"
         >
           <slot name="default" />
-        </div>
-        <!-- footer -->
-        <div
-            style="border-top: 1px solid #E6E6E6;box-sizing: border-box;"
-            class="w-full h-14 flex px-4 items-center cursor-pointer justify-center hover:bg-[#E6E6E6]"
-        >
-          回收站
-          <el-icon
-              class="pl-1"
-          >
-            <Delete style="font-size: 15px;" />
-          </el-icon>
         </div>
       </div>
     </template>
