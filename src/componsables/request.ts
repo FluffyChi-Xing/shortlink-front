@@ -6,7 +6,7 @@ import {$message} from "@/componsables/element-plus.ts";
 
 
 // TODO request 和 response 拦截器无法发挥正常作用，待修复
-export async function $request(url: string, options?: any, body?: any, baseUrl?: string, header?: any) {
+export async function $request(url: string, options?: any | null, body?: any, baseUrl?: string, header?: any) {
     return await ofetch(url, {
         // 请求前预处理
         async onRequest() {
@@ -56,8 +56,13 @@ export async function $request(url: string, options?: any, body?: any, baseUrl?:
 /**
  * 从缓存中获取 userInfo 中的 username
  */
-export function getUsername(): string {
-    return JSON.parse(localStorage.getItem($const.USER_LOGIN_STORAGE_KET))?.username.toString();
+export function getUsername() {
+    let userInfo = localStorage.getItem($const.USER_LOGIN_STORAGE_KET);
+    if (userInfo) {
+        return JSON.parse(userInfo)?.username.toString();
+    } else {
+        return null;
+    }
 }
 
 export function getRealName(): string {
@@ -76,12 +81,14 @@ export function getUserId(): string {
 /**
  * 从缓存中获取 token
  */
-export function getToken(): string {
-    let token: string = JSON.parse(localStorage.getItem($const.USER_LOGIN_STORAGE_KET))?.token;
+export function getToken() {
+    let userInfo = localStorage.getItem($const.USER_LOGIN_STORAGE_KET);
     // TODO: 调用验证 token 接口 以验证 token 是否过期，修改函数返回值为 boolean
-    // return checkToken(token);
-    // console.log(token);
-    return token;
+    if (userInfo) {
+        return JSON.parse(userInfo)?.token;
+    } else {
+        return null;
+    }
 }
 
 

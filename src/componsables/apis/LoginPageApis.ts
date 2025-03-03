@@ -69,6 +69,16 @@ export async function getCaptcha() {
 
 
 /**
+ * TODO: 检查登录状态
+ * @param username
+ * @param token
+ */
+export async function checkLogin(username: string, token: string) {
+    return null;
+}
+
+
+/**
  * 存储验证码key
  * @param key
  */
@@ -86,7 +96,13 @@ export function setCaptchaCodeKey(key: string) {
  * 获取验证码key
  */
 export function getCaptchaCodeKey(): string {
-    return localStorage.getItem($const.CAPTCHA_CODE_KEY) as string;
+    let captcha = localStorage.getItem($const.CAPTCHA_CODE_KEY);
+    if (captcha) {
+        return captcha;
+    } else {
+        LogUtil.alert('无法获取到验证码 key');
+        return '';
+    }
 }
 
 
@@ -108,7 +124,13 @@ export async function setUserInfo(UserInfo: UserTypes.UserLoginInfoType) {
  * 获取用户登录信息
  */
 export function getUserInfo() {
-    return JSON.parse(localStorage.getItem($const.USER_LOGIN_STORAGE_KET));
+    let userInfo = localStorage.getItem($const.USER_LOGIN_STORAGE_KET);
+    if (userInfo) {
+        return JSON.parse(userInfo);
+    } else {
+        LogUtil.error('无法获取到用户登录信息');
+        return null;
+    }
 }
 
 

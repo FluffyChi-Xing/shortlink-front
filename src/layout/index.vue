@@ -40,7 +40,8 @@ async function handleTokenRefresher() {
 }
 
 onMounted(async () => {
-  await handleTokenRefresher();
+  // TODO: 暂不开启定时刷新token服务
+  // await handleTokenRefresher();
   console.log('主页面已挂载');
 });
 </script>
