@@ -13,6 +13,7 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "@tailwindcss/vite": "^4.0.3",
+    "@types/qrcode": "^1.5.5",
     "chalk": "^5.4.1",
     "dayjs": "^1.11.13",
     "element-plus": "^2.9.3",
@@ -20,6 +21,7 @@
     "nprogress": "^0.2.0",
     "ofetch": "^1.4.1",
     "pinia": "^2.3.1",
+    "qrcode": "^1.5.4",
     "set-worker-timer": "^0.2.0",
     "three": "^0.173.0",
     "vanta": "^0.5.24",

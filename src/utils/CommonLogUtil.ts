@@ -124,7 +124,7 @@ export namespace LogUtil {
         console.log(beautifulConsole(chalkColorEnums.yellow, null, msg))
     }
 
-    export function error(msg: string) {
+    export function error(msg: string | any) {
         console.error(beautifulConsole(chalkColorEnums.red, null, msg));
     }
 

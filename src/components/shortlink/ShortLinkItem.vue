@@ -49,7 +49,7 @@ watch(() => props?.selected, (val: boolean) => {
       <img src="@/assets/img/drag.png" alt="拖动" style="width: 10px;height: 10px;background-repeat: no-repeat;">
     </div>
     <!-- groupName -->
-    <div class="w-full h-full flex items-center col-span-2 overflow-hidden text-ellipsis whitespace-nowrap font-bold text-theme-color">
+    <div class="w-full h-full flex items-center cursor-pointer col-span-2 overflow-hidden text-ellipsis whitespace-nowrap font-bold text-theme-color">
       <el-tooltip
           effect="dark"
           placement="bottom"
