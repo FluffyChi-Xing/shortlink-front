@@ -82,6 +82,9 @@ router.beforeEach(async (to,from, next) => {
   if (getToken() === null || getToken() === undefined) {
     next('/login');
   }
+  if (to.path === '/') {
+    next('/home');
+  }
   if (to.meta?.title) {
     document.title = to.meta.title as string;
   }

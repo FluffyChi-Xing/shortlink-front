@@ -16,4 +16,18 @@ export namespace ShortLinkTypes {
         favicon: string; // 短链接分组favicon
         description: string; // 短链接分组描述
     }
+
+
+    /**
+     * 短链接分组类型
+     */
+    export interface shortLinkGroupTypes {
+        gid: string; // 短链接分组id
+
+        name: string; // 分组名称
+
+        sortOrder: number; // 分组排序
+
+        shortLinkCount: number; // 分组内短链接数量
+    }
 }

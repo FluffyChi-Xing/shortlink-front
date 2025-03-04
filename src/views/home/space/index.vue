@@ -9,6 +9,7 @@ import BaseQRCode from "@/components/base/BaseQRCode.vue";
 import {copyTextToClipboard} from "@/utils/CopyUtil.ts";
 import {$message} from "@/componsables/element-plus.ts";
 import BaseDialog from "@/components/base/BaseDialog.vue";
+import type {ShortLinkTypes} from "@/componsables/apis/ShortLinkTypes";
 
 
 const pageSizes = ref<number[]>([5, 10, 15]);
@@ -20,6 +21,16 @@ const currentSize = ref<number>(10);
 const editFlag = ref<boolean>(false);
 const delFlag = ref<boolean>(false);
 const statsFlag = ref<boolean>(false);
+// TODO: 之后直接在 /# 页面上获取后存入 pinia 这里直接改为从 store 中获取
+// 短链接分组列表 模拟数据
+const shortLinkGroupList = ref<ShortLinkTypes.shortLinkGroupTypes[]>([
+  {
+    gid: 'eCJGh3',
+    name: '默认分组',
+    sortOrder: 0,
+    shortLinkCount: 2,
+  }
+]);
 const tableData = ref<SpaceTypes.ShortLinkIPageTableDataType[]>([]);
 const downLoadFlag = ref<boolean>(false);
 const currentRow = ref<SpaceTypes.ShortLinkIPageTableDataType | null>(null);
@@ -51,7 +62,7 @@ const shortLinkIPageData = ref<SpaceTypes.ShortLinkIPageType[]>([
 async function getTableData() {
   // TODO: 调用后端接口获取分页数据
   tableData.value = spaceTableDataGenerator(shortLinkIPageData.value);
-  console.log(tableData.value[0])
+  // console.log(tableData.value[0])
 }
 
 
@@ -79,10 +90,11 @@ async function copyFullShortUrl(text: string) {
 
 // 编辑短链接 -start
 
-const originUrl = ref<string>('');
-const shortLinkDescribe = ref<string>('');
-const shortLinkGroup = ref<string[]>([]);
+const originUrl = ref<string>();
+const shortLinkDescribe = ref<string>( );
+const shortLinkGroup = ref<string>();
 const shortLinkValidType = ref<string>('0');
+const validDate = ref<string>();
 
 /**
  * 编辑短链接窗口
@@ -91,16 +103,145 @@ const shortLinkValidType = ref<string>('0');
 function editShortLink(row: SpaceTypes.ShortLinkIPageTableDataType) {
   editFlag.value = true;
   currentRow.value = row;
+  initEditFormData(); // 在打开编辑短链接弹窗的时候初始化回显数据
 }
 
 
+/**
+ * 数据回显初始化函数
+ */
+function initEditFormData() {
+  originUrl.value = currentRow.value?.shortLinkWebsiteInfo.originUrl;
+  shortLinkDescribe.value = currentRow.value?.shortLinkInfo.describe;
+  shortLinkGroupList.value.forEach((item: ShortLinkTypes.shortLinkGroupTypes) => {
+    if (item.gid === currentRow.value?.shortLinkInfo.gid) {
+      shortLinkGroup.value = item.gid;
+    }
+  })
+}
 
+
+/**
+ * 窗口关闭初始化函数
+ */
 function initEditShortLink() {
   editFlag.value = false;
   currentRow.value = null;
+  // 清除回显数据
+  originUrl.value = '';
+  shortLinkDescribe.value = '';
+  shortLinkGroup.value = '';
 }
 
 // 编辑短链接 -end
+
+
+
+// 删除短链接 -start
+
+
+const delShortLinkName = ref<string>('未知');
+
+/**
+ * 删除短连接触发器
+ * @param row
+ */
+function delShortLink(row: SpaceTypes.ShortLinkIPageTableDataType) {
+  delFlag.value = true;
+  currentRow.value = row;
+  delShortLinkName.value = row?.shortLinkInfo.describe ? row?.shortLinkInfo.describe : '未知短链';
+}
+
+
+// 删除短链接 -end
+
+
+
+// 统计短链接 -start
+
+const statsShortLinkName = ref<string>('未知');
+
+
+/**
+ * 统计短链接触发器
+ * @param row
+ */
+function statsShortLink(row: SpaceTypes.ShortLinkIPageTableDataType) {
+  statsFlag.value = true;
+  currentRow.value = row;
+  statsShortLinkName.value = row?.shortLinkInfo.describe ? row?.shortLinkInfo.describe : '未知短链';
+}
+
+// 统计短链接 -end
+const createFlag = ref<boolean>(false);
+const createShortLinkOriginUrl = ref<string>();
+const createShortLinkDescribe = ref<string>();
+const createShortLinkGroup = ref<string>();
+const createShortLinkValidType = ref<string>('0');
+const createShortLinkValidDate = ref<string>();
+// 批量创建短链接
+const batchCreateFlag = ref<boolean>(false);
+const batchCreateShortLinkUrl = ref<string[]>([]);
+const batchCreateShortLinkDescribes = ref<string[]>([]);
+const batchCreateShortLinkGroup = ref<string>();
+const batchCreateShortLinkValidType = ref<string>('0');
+const batchCreateShortLinkValidDate = ref<string>();
+
+
+/**
+ * 创建短链接弹窗触发器
+ */
+function createShortLinkHandler() {
+  createFlag.value = true;
+}
+
+
+function batchCreateShortLinkHandler() {
+  batchCreateFlag.value = true;
+}
+
+
+/**
+ * 取消创建短链接函数
+ */
+function cancelCreateShortLinkHandler() {
+  createFlag.value = false;
+  initCreateShortLinkBindData();
+}
+
+
+function cancelBatchCreateShortLinkHandler() {
+  batchCreateFlag.value = false;
+  initBatchCreateShortLinkBindData();
+}
+
+
+/**
+ * 关闭窗口数据初始化函数
+ */
+function initCreateShortLinkBindData() {
+  createShortLinkOriginUrl.value = '';
+  createShortLinkDescribe.value = '';
+  createShortLinkGroup.value = '';
+  createShortLinkValidType.value = '0';
+  createShortLinkValidDate.value = '';
+}
+
+
+function initBatchCreateShortLinkBindData() {
+  batchCreateShortLinkUrl.value = [];
+  batchCreateShortLinkDescribes.value = [];
+  batchCreateShortLinkGroup.value = '';
+  batchCreateShortLinkValidType.value = '0';
+  batchCreateShortLinkValidDate.value = '';
+}
+
+
+// 短链接创建 -start
+
+
+
+// 短链接创建 -end
 
 
 onMounted(async () => {
@@ -116,8 +257,8 @@ onMounted(async () => {
         <div class="w-full h-full flex flex-col">
           <!-- functional banner -->
           <div class="w-full h-auto flex py-2">
-            <el-button type="primary">创建短链接</el-button>
-            <el-button type="primary" plain>批量创建短链接</el-button>
+            <el-button @click="createShortLinkHandler" type="primary">创建短链接</el-button>
+            <el-button @click="batchCreateShortLinkHandler" type="primary" plain>批量创建短链接</el-button>
           </div>
           <!-- table area -->
           <div
@@ -272,9 +413,9 @@ onMounted(async () => {
               <el-table-column label="操作" width="200" fixed="right">
                 <template #default="{ row }">
                   <div class="w-full h-auto flex justify-between">
-                    <el-button type="text" icon="PieChart">统计</el-button>
+                    <el-button @click="statsShortLink(row)" type="text" icon="PieChart">统计</el-button>
                     <el-button @click="editShortLink(row)" type="text" icon="Setting">设置</el-button>
-                    <el-button type="text" icon="Delete">删除</el-button>
+                    <el-button @click="delShortLink(row)" type="text" icon="Delete">删除</el-button>
                   </div>
                 </template>
               </el-table-column>
@@ -300,6 +441,23 @@ onMounted(async () => {
     </BaseCard>
   </div>
   <!-- 统计短链接窗口 -->
+  <BaseDialog
+      v-model:visible="statsFlag"
+      width="600"
+      title="统计短链接"
+  >
+    <template #body>
+      <el-empty
+          description="暂无统计数据"
+      />
+    </template>
+    <template #footer>
+      <div class="w-full h-auto flex items-center justify-end">
+        <el-button type="primary">确认</el-button>
+        <el-button @click="() => statsFlag = false" type="info">取消</el-button>
+      </div>
+    </template>
+  </BaseDialog>
   <!-- 编辑短链接窗口 -->
   <BaseDialog
       v-model:visible="editFlag"
@@ -311,7 +469,7 @@ onMounted(async () => {
         <el-form label-width="auto">
           <el-form-item label="跳转链接" required>
             <el-input
-                v-model="currentRow.shortLinkWebsiteInfo.originUrl"
+                v-model="originUrl"
                 clearable
                 maxlength="300"
                 placeholder="请输入跳转链接"
@@ -319,7 +477,49 @@ onMounted(async () => {
             />
           </el-form-item>
           <el-form-item required label="描述信息">
-            <textarea v-model="currentRow.shortLinkInfo.describe" maxlength="300" placeholder="请输入短链接描述" class="w-full bg-[#EEF0F5] h-20 p-4 resize-none" />
+            <textarea v-model="shortLinkDescribe" maxlength="300" placeholder="请输入短链接描述" class="w-full bg-[#EEF0F5] h-20 p-4 resize-none" />
+          </el-form-item>
+          <el-form-item required label="短链分组">
+            <el-select
+                v-model="shortLinkGroup"
+                placeholder="请选择短链接分组"
+                class="w-full"
+            >
+              <el-option
+                  v-for="(item, index) in shortLinkGroupList"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.gid"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item required label="有效期">
+            <el-radio-group
+                v-model="shortLinkValidType"
+            >
+              <el-radio-button
+                  value="0"
+              >
+                永久
+              </el-radio-button>
+              <el-radio-button
+                  value="1"
+              >
+                自定义
+              </el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item
+              v-if="shortLinkValidType === '1'"
+              required
+              label="选择时间"
+          >
+            <el-date-picker
+                v-model="validDate"
+                type="date"
+                placeholder="选择过期时间"
+                size="default"
+            />
           </el-form-item>
         </el-form>
       </div>
@@ -332,6 +532,168 @@ onMounted(async () => {
     </template>
   </BaseDialog>
   <!-- 删除短链接窗口 -->
+  <BaseDialog
+      v-model:visible="delFlag"
+      title="删除短链接"
+      width="500"
+  >
+    <template #body>
+      <div class="w-full h-auto flex items-center whitespace-pre-line text-red-500 font-bold">
+        你确定要将短链接 [ {{ delShortLinkName }} ] 放入回收站吗 ?
+      </div>
+    </template>
+    <template #footer>
+      <div class="w-full h-auto flex items-center justify-end">
+        <el-button type="primary">确认</el-button>
+        <el-button @click="() => delFlag = false" type="info">取消</el-button>
+      </div>
+    </template>
+  </BaseDialog>
+  <!-- 创建短链接接口 -->
+  <BaseDialog
+      v-model:visible="createFlag"
+      width="500"
+      title="创建短链接"
+  >
+    <template #body>
+      <div class="w-full h-auto flex flex-col">
+        <el-form
+            label-width="auto"
+            class="w-full"
+        >
+          <el-form-item label="跳转链接" required>
+            <el-input
+                v-model="createShortLinkOriginUrl"
+                placeholder="请输入 http://或 https:// 开头的原始链接"
+                clearable
+                maxlength="300"
+                class="w-full"
+            />
+          </el-form-item>
+          <el-form-item required label="描述信息">
+            <textarea
+                v-model="createShortLinkDescribe"
+                placeholder="请输入短链接描述"
+                class="w-full h-20 p-4 bg-[#EEF0F5] resize-none"
+                maxlength="300"
+            />
+          </el-form-item>
+          <el-form-item required label="短链分组">
+            <el-select
+                v-model="createShortLinkGroup"
+                placeholder="请选择短链接分组"
+                class="w-full"
+            >
+              <el-option
+                  v-for="(item, index) in shortLinkGroupList"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.gid"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item required label="有效期">
+            <el-radio-group
+                v-model="createShortLinkValidType"
+            >
+              <el-radio-button
+                  value="0"
+              >
+                永久
+              </el-radio-button>
+              <el-radio-button
+                  value="1"
+              >
+                自定义
+              </el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item
+              v-if="createShortLinkValidType === '1'"
+              required
+              label="选择时间"
+          >
+            <el-date-picker
+                v-model="createShortLinkValidDate"
+                type="date"
+                placeholder="选择过期时间"
+                size="default"
+            />
+          </el-form-item>
+        </el-form>
+      </div>
+    </template>
+    <template #footer>
+      <div class="w-full h-auto flex items-center justify-end">
+        <el-button type="primary">确认</el-button>
+        <el-button @click="cancelCreateShortLinkHandler" type="info">取消</el-button>
+      </div>
+    </template>
+  </BaseDialog>
+  <!-- 批量创建短链接窗口 -->
+  <BaseDialog
+      v-model:visible="batchCreateFlag"
+      title="批量创建短链接"
+      width="500"
+  >
+    <template #body>
+      <div class="w-full h-auto flex flex-col">
+        <el-form
+            label-width="auto"
+            class="w-full"
+        >
+          <el-form-item label="跳转链接" required>
+            <textarea
+                v-model="batchCreateShortLinkUrl"
+                placeholder="请输入 http://或 https:// 开头的原始链接 并用 , 号分隔"
+                class="w-full h-20 p-4 bg-[#EEF0F5] resize-none"
+            />
+          </el-form-item>
+          <el-form-item label="描述信息" required>
+            <textarea
+                v-model="batchCreateShortLinkDescribes"
+                placeholder="请输入 短链接描述信息 并用 , 号分隔"
+                class="w-full h-20 p-4 bg-[#EEF0F5] resize-none"
+            />
+          </el-form-item>
+          <el-form-item required label="有效期">
+            <el-radio-group
+                v-model="batchCreateShortLinkValidType"
+            >
+              <el-radio-button
+                  value="0"
+              >
+                永久
+              </el-radio-button>
+              <el-radio-button
+                  value="1"
+              >
+                自定义
+              </el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item
+              v-if="batchCreateShortLinkValidType === '1'"
+              required
+              label="选择时间"
+          >
+            <el-date-picker
+                v-model="batchCreateShortLinkValidDate"
+                type="date"
+                placeholder="选择过期时间"
+                size="default"
+            />
+          </el-form-item>
+        </el-form>
+      </div>
+    </template>
+    <template #footer>
+      <div class="w-full h-auto flex items-center justify-end">
+        <el-button type="primary">确认</el-button>
+        <el-button @click="cancelBatchCreateShortLinkHandler" type="info">取消</el-button>
+      </div>
+    </template>
+  </BaseDialog>
 </template>
 
 <style scoped>

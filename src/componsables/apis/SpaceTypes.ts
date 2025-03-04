@@ -69,6 +69,8 @@ export namespace SpaceTypes {
         createTime: string; // 创建时间
 
         describe: string; // 短连接描述
+
+        gid: string; // 分组id
     }
 
 
