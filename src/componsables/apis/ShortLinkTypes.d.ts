@@ -29,5 +29,7 @@ export namespace ShortLinkTypes {
         sortOrder: number; // 分组排序
 
         shortLinkCount: number; // 分组内短链接数量
+
+        selected: boolean; // 是否选中
     }
 }

@@ -49,7 +49,7 @@ async function copyFullShortUrl(text: string) {
             @click="jumpUrl(DEFAULT_SHORT_LINK_PREFIX_URL + row?.shortLinkWebsiteInfo.fullShortUrl)"
             class="w-full h-auto cursor-pointer text-blue-400 hover:underline flex items-center overflow-hidden text-ellipsis"
         >
-          https://{{ row?.shortLinkWebsiteInfo.fullShortUrl ? row?.shortLinkWebsiteInfo.fullShortUrl : '未知地址' }}
+          {{ row?.shortLinkWebsiteInfo.fullShortUrl ? row?.shortLinkWebsiteInfo.fullShortUrl : '未知地址' }}
         </div>
         <div class="w-full h-auto text-gray-400 flex items-center overflow-hidden text-ellipsis">
           {{ row?.shortLinkWebsiteInfo.originUrl ? row?.shortLinkWebsiteInfo.originUrl : '未知地址' }}

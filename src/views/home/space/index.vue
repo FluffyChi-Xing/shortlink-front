@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import BaseCard from "@/components/base/BaseCard.vue";
 import BasePagination from "@/components/base/BasePagination.vue";
 import type {SpaceTypes} from "@/componsables/apis/SpaceTypes.ts";
 import {spaceTableDataGenerator} from "@/componsables/apis/SpaceApis.ts";
-import {ChatRound, PieChart, Share} from "@element-plus/icons-vue";
-import BaseQRCode from "@/components/base/BaseQRCode.vue";
-import {copyTextToClipboard} from "@/utils/CopyUtil.ts";
-import {$message} from "@/componsables/element-plus.ts";
 import BaseDialog from "@/components/base/BaseDialog.vue";
 import type {ShortLinkTypes} from "@/componsables/apis/ShortLinkTypes";
 import ShortLinkCellInfo from "@/views/home/space/components/ShortLinkCellInfo.vue";
@@ -15,59 +11,56 @@ import ShortLinkCellWebsiteInfo from "@/views/home/space/components/ShortLinkCel
 import ShortLinkCellPv from "@/views/home/space/components/ShortLinkCellPv.vue";
 import ShortLinkCellUip from "@/views/home/space/components/ShortLinkCellUip.vue";
 import ShortLinkCellUv from "@/views/home/space/components/ShortLinkCellUv.vue";
+import {$api} from "@/componsables/api.ts";
+import {LogUtil} from "@/utils/CommonLogUtil.ts";
+import {useRoute} from "vue-router";
+import {useCounterStore} from "@/stores/counter.ts";
 
 
 const pageSizes = ref<number[]>([5, 10, 15]);
 const currentPage = ref<number>(1);
 const currentSize = ref<number>(10);
+const currentGid = ref<string>('');
+const route = useRoute();
 
 
 /** ==================== 短连接分页管理页面-start ==================== */
 const editFlag = ref<boolean>(false);
 const delFlag = ref<boolean>(false);
 const statsFlag = ref<boolean>(false);
-// TODO: 之后直接在 /# 页面上获取后存入 pinia 这里直接改为从 store 中获取
-// 短链接分组列表 模拟数据
-const shortLinkGroupList = ref<ShortLinkTypes.shortLinkGroupTypes[]>([
-  {
-    gid: 'eCJGh3',
-    name: '默认分组',
-    sortOrder: 0,
-    shortLinkCount: 2,
-  }
-]);
+const store = useCounterStore();
+// 短链接分组列表
+const shortLinkGroupList = ref<ShortLinkTypes.shortLinkGroupTypes[]>([]);
 const tableData = ref<SpaceTypes.ShortLinkIPageTableDataType[]>([]);
 // const downLoadFlag = ref<boolean>(false);
 const currentRow = ref<SpaceTypes.ShortLinkIPageTableDataType | null>(null);
-// 后端响应模拟数据
-const shortLinkIPageData = ref<SpaceTypes.ShortLinkIPageType[]>([
-  {
-    id: '1847981660247695362',
-    domain: "http://url.nageoffer.com",
-    shortUrl: "2uoYPa",
-    fullShortUrl: "url.nageoffer.com/2uoYPa",
-    originUrl: "https://juejin.cn/post/7259757499254718524",
-    gid: "eCJGh3",
-    validDateType: 0,
-    enableStatus: 0,
-    validDate: null,
-    createTime: "2024-10-20 20:42:16",
-    describe: "校招：外卖和商城项目不吃香了，我选 12306！铁路购票服务是与大家生活和出行相关的关键系统，包括会员、购票、订单、支付 - 掘金",
-    favicon: "https://lf-web-assets.juejin.cn/obj/juejin-web/xitu_juejin_web/static/favicons/favicon-32x32.png",
-    totalPv: 351,
-    todayPV: 4,
-    totalUv: 297,
-    todayUv: 2,
-    totalUip: 287,
-    todayUip: 2
-  }
-]);
+// 后端响应
+const shortLinkIPageData = ref<SpaceTypes.ShortLinkIPageType[]>([]);
 
 
+function resetBindData() {
+  tableData.value = [];
+  shortLinkIPageData.value = [];
+  currentSize.value = pageSizes.value[1];
+  currentPage.value = 1;
+}
+
+
+
+/**
+ * 获取短链接分页列表
+ */
 async function getTableData() {
-  // TODO: 调用后端接口获取分页数据
-  tableData.value = spaceTableDataGenerator(shortLinkIPageData.value);
-  // console.log(tableData.value[0])
+  resetBindData(); // 重置数据
+  await $api.getShortLinkPage(currentPage.value, currentSize.value, currentGid.value).then((res: any) => {
+    res.data.records.forEach((item: any) => {
+      shortLinkIPageData.value.push(item);
+    });
+    tableData.value = spaceTableDataGenerator(shortLinkIPageData.value);
+  }).catch((error) => {
+    // LogUtil.error(error);
+    console.log(error);
+  })
 }
 
 // 编辑短链接 -start
@@ -224,9 +217,19 @@ function initBatchCreateShortLinkBindData() {
 
 
 // 短链接创建 -end
+// TODO: 处理编辑短链接弹窗 过期时间 选择的回显效果
 
 
 onMounted(async () => {
+  shortLinkGroupList.value = store.shortLinkGroup;
+  currentGid.value = route.params.groupName as string;
+  await getTableData();
+})
+
+
+
+watch(() => route.params.groupName, async () => {
+  currentGid.value = route.params.groupName as string;
   await getTableData();
 })
 /** ==================== 短连接分页管理页面-end ==================== */

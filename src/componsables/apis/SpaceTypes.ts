@@ -44,7 +44,7 @@ export namespace SpaceTypes {
 
         createTime: string; // 创建时间
 
-        describe: string; // 短链接描述
+        description: string; // 短链接描述
 
         favicon: string; // 网站图标
 

@@ -39,7 +39,7 @@ const props = withDefaults(defineProps<{
       >
         <transition-group>
           <slot
-              v-if="props?.list?.length > 0"
+              v-if="props?.list.length > 0"
               name="component"
           />
           <el-empty

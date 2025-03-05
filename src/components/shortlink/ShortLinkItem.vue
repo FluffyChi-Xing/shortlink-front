@@ -40,7 +40,7 @@ watch(() => props?.selected, (val: boolean) => {
   <div
       @mouseenter="flag = true"
       @mouseleave="flag = false"
-      @click="handleRoute(props.url)"
+      @click="handleRoute(props.gid)"
       class="w-full h-14 grid grid-cols-5 gap-1 items-center p-4 my-2 hover:shadow-md hover:bg-theme-light"
       :class="selected ? 'bg-theme-light' : 'bg-white'"
   >

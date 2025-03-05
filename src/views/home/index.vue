@@ -11,10 +11,14 @@ import type {ShortLinkTypes} from "@/componsables/apis/ShortLinkTypes";
 import {$const} from "@/componsables/const.ts";
 import {useRoute} from "vue-router";
 import SpaceAccessHistory from "@/components/space/SpaceAccessHistory.vue";
+import {$api} from "@/componsables/api.ts";
+import {LogUtil} from "@/utils/CommonLogUtil.ts";
+import {useCounterStore} from "@/stores/counter.ts";
 
 
 
 const route = useRoute();
+const store = useCounterStore();
 /** ======= 分组创建窗口-start ====== */
 const dialogVisible = ref<boolean>(false);
 const groupName = ref<string>('');
@@ -31,36 +35,7 @@ const groupEdit = ref<boolean>(false);
 const groupDel = ref<boolean>(false);
 const currentGroupIndex = ref<string | number>();
 const groupCount = ref<number>(0);
-const groupList = ref<ShortLinkTypes.testGroupLinkTypes[]>([
-  {
-    id: 1,
-    name: '默认分组1',
-    count: 10,
-    url: 'short-link1',
-    selected: false
-  },
-  {
-    id: 2,
-    name: '默认分组2',
-    count: 10,
-    url: 'short-link2',
-    selected: false
-  },
-  {
-    id: 3,
-    name: '默认分组3',
-    count: 10,
-    url: 'short-link3',
-    selected: false
-  },
-  {
-    id: 4,
-    name: '默认分组4',
-    count: 10,
-    url: 'short-link4',
-    selected: false
-  },
-]);
+const groupList = ref<ShortLinkTypes.shortLinkGroupTypes[]>([]);
 
 // 短链接统计事件
 function handleStatistics(index: string | number) {
@@ -94,7 +69,7 @@ function checkSelected() {
     })
   } else {
     groupList.value.forEach(item => {
-      if (route.path === $const.DEFAULT_ROUTER_PREFIX + item.url) {
+      if (route.path === $const.DEFAULT_ROUTER_PREFIX + item.gid) {
         item.selected = true;
       }
     })
@@ -102,9 +77,34 @@ function checkSelected() {
 }
 
 
+/**
+ * 获取短链接分组列表
+ */
+async function getGroupList() {
+  await $api.getGroupList().then((res: any) => {
+    res.data.forEach((item: any) => {
+      groupList.value?.push({
+        gid: item.gid,
+        name: item.name,
+        shortLinkCount: item.shortLinkCount,
+        selected: false,
+        sortOrder: item.sortOrder
+      });
+      store.shortLinkGroup.push({
+        ...item,
+        selected: false
+      });
+    })
+  }).catch(error => {
+    LogUtil.error(error);
+  })
+}
 
-onMounted(() => {
+
+
+onMounted(async () => {
   checkSelected();
+  await getGroupList();
 })
 
 watch(() => route.path, () => {
@@ -140,10 +140,9 @@ watch(() => route.path, () => {
                       v-for="(item, index) in groupList"
                       :key="index"
                       :group-name="item.name"
-                      :count="item.count"
-                      :url="item.url"
+                      :count="item.shortLinkCount"
                       :selected="item.selected"
-                      :gid="item.id"
+                      :gid="item.gid"
                       @statistics="handleStatistics"
                       @edit="handleEdit"
                       @delete="handleDel"

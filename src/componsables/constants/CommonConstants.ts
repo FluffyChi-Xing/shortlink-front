@@ -25,3 +25,12 @@ export const DEFAULT_USER_AVATAR = 'https://cube.elemecdn.com/0/88/03b0d39583f48
 export const DEFAULT_SHORT_LINK_PREFIX_URL = 'http://';
 
 
+/**
+ * 短连接平台后管服务前缀地址
+ */
+export const DEFAULT_ADMIN_SERVICE_URL = '/api/shortlink/admin/v1';
+
+
+export const DEFAULT_BUSINESS_SERVICE_URL = '/api/shortlink/business/v1';
+
+

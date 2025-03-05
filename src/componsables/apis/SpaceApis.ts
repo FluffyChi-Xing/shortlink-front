@@ -15,7 +15,7 @@ export function spaceTableDataGenerator(shortLinkItemList: SpaceTypes.ShortLinkI
             let shortLinkInfo: SpaceTypes.ShortLinkIPageInfoType = {
                 favicon: item.favicon,
                 createTime: dateFormat(item.createTime, 'YYYY-MM-DD hh:mm:ss'),
-                describe: item.describe,
+                describe: item.description,
                 gid: item.gid,
                 validDate: dateFormat(item.validDate, 'YYYY-MM-DD hh:mm:ss'),
             };
