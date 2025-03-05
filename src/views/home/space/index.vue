@@ -10,6 +10,11 @@ import {copyTextToClipboard} from "@/utils/CopyUtil.ts";
 import {$message} from "@/componsables/element-plus.ts";
 import BaseDialog from "@/components/base/BaseDialog.vue";
 import type {ShortLinkTypes} from "@/componsables/apis/ShortLinkTypes";
+import ShortLinkCellInfo from "@/views/home/space/components/ShortLinkCellInfo.vue";
+import ShortLinkCellWebsiteInfo from "@/views/home/space/components/ShortLinkCellWebsiteInfo.vue";
+import ShortLinkCellPv from "@/views/home/space/components/ShortLinkCellPv.vue";
+import ShortLinkCellUip from "@/views/home/space/components/ShortLinkCellUip.vue";
+import ShortLinkCellUv from "@/views/home/space/components/ShortLinkCellUv.vue";
 
 
 const pageSizes = ref<number[]>([5, 10, 15]);
@@ -32,7 +37,7 @@ const shortLinkGroupList = ref<ShortLinkTypes.shortLinkGroupTypes[]>([
   }
 ]);
 const tableData = ref<SpaceTypes.ShortLinkIPageTableDataType[]>([]);
-const downLoadFlag = ref<boolean>(false);
+// const downLoadFlag = ref<boolean>(false);
 const currentRow = ref<SpaceTypes.ShortLinkIPageTableDataType | null>(null);
 // 后端响应模拟数据
 const shortLinkIPageData = ref<SpaceTypes.ShortLinkIPageType[]>([
@@ -63,29 +68,6 @@ async function getTableData() {
   // TODO: 调用后端接口获取分页数据
   tableData.value = spaceTableDataGenerator(shortLinkIPageData.value);
   // console.log(tableData.value[0])
-}
-
-
-/**
- * 下载短连接二维码
- */
-function downloadQrCode() {
-  downLoadFlag.value = !downLoadFlag.value;
-}
-
-
-async function copyFullShortUrl(text: string) {
-  await copyTextToClipboard(text).then(() => {
-    $message({
-      type: "success",
-      message: '复制成功'
-    });
-  }).catch(() => {
-    $message({
-      type: "error",
-      message: '复制失败'
-    });
-  });
 }
 
 // 编辑短链接 -start
@@ -278,29 +260,7 @@ onMounted(async () => {
                   show-overflow-tooltip
               >
                 <template #default="{ row }">
-                  <div class="w-full h-10 flex items-center">
-                    <!-- favicon -->
-                    <div class="w-5 h-5 mx-2 flex items-center">
-                      <el-image
-                          :src="row?.shortLinkInfo.favicon"
-                          class="w-full h-full"
-                          fit="contain"
-                          loading="lazy"
-                      />
-                    </div>
-                    <!-- other info -->
-                    <div
-                        style="width: calc(100% - 28px);"
-                        class="w-auto h-full flex flex-col items-center overflow-hidden"
-                    >
-                      <div class="w-full h-auto flex text-4 items-center overflow-hidden text-ellipsis">
-                        {{ row?.shortLinkInfo.describe ? row?.shortLinkInfo.describe : '未知' }}
-                      </div>
-                      <div class="w-full h-auto flex text-2 items-center overflow-hidden text-ellipsis">
-                        {{ row?.shortLinkInfo.createTime ? row?.shortLinkInfo.createTime : '未知' }}
-                      </div>
-                    </div>
-                  </div>
+                  <ShortLinkCellInfo :row="row" />
                 </template>
               </el-table-column>
               <el-table-column
@@ -310,60 +270,9 @@ onMounted(async () => {
                   show-overflow-tooltip
               >
                 <template #default="{ row }">
-                  <div class="w-full h-auto flex items-center">
-                    <div
-                        style="width: calc(100% - 40px);"
-                        class="w-full h-auto flex items-center"
-                    >
-                      <div class="w-full h-auto flex flex-col items-center">
-                        <div class="w-full h-auto cursor-pointer text-blue-400 hover:underline flex items-center overflow-hidden text-ellipsis">
-                          https://{{ row?.shortLinkWebsiteInfo.fullShortUrl ? row?.shortLinkWebsiteInfo.fullShortUrl : '未知地址' }}
-                        </div>
-                        <div class="w-full h-auto text-gray-400 flex items-center overflow-hidden text-ellipsis">
-                          {{ row?.shortLinkWebsiteInfo.originUrl ? row?.shortLinkWebsiteInfo.originUrl : '未知地址' }}
-                        </div>
-                      </div>
-                    </div>
-                    <div class="w-10 h-10 flex items-center justify-between">
-                      <!-- qr-code popover -->
-                      <el-popover
-                          trigger="click"
-                          effect="light"
-                          placement="bottom"
-                          width="172"
-                      >
-                        <template #reference>
-                          <el-image
-                              src="http://shortlink.nageoffer.com/assets/%E4%BA%8C%E7%BB%B4%E7%A0%81-2c225c0e.svg"
-                              loading="lazy"
-                              fit="contain"
-                              style="width: 15px;height: 15px;"
-                              class="cursor-pointer"
-                          />
-                        </template>
-                        <template #default>
-                          <!-- qrcode -->
-                          <div class="w-full h-[132px] flex items-center">
-                            <BaseQRCode :flag="downLoadFlag" :link="row?.shortLinkWebsiteInfo.fullShortUrl" :width="200" :height="200" />
-                          </div>
-                          <!-- download qrcode img -->
-                          <div class="w-full h-auto mt-2">
-                            <el-button @click="downloadQrCode" type="primary" class="w-full">下载</el-button>
-                          </div>
-                        </template>
-                      </el-popover>
-                      <!-- full short-link copy btn -->
-                      <el-tooltip
-                          effect="light"
-                          placement="bottom"
-                          content="复制"
-                      >
-                        <el-icon size="20">
-                          <Share @click="copyFullShortUrl('https://' + row?.shortLinkWebsiteInfo.fullShortUrl)" class="text-blue-400 cursor-pointer" />
-                        </el-icon>
-                      </el-tooltip>
-                    </div>
-                  </div>
+                  <ShortLinkCellWebsiteInfo
+                      :row="row"
+                  />
                 </template>
               </el-table-column>
               <el-table-column
@@ -372,14 +281,7 @@ onMounted(async () => {
                   width="150"
               >
                 <template #default="{ row }">
-                  <div class="w-full h-auto flex flex-col items-center">
-                    <div class="w-full text-gray-400 h-auto flex">
-                      今日: <div class="font-bold w-10 flex justify-center text-black">{{ row?.shortLinkPv.todayPv > 99 ? '99+' : row?.shortLinkPv.todayPv }}</div>
-                    </div>
-                    <div class="w-full text-gray-400 h-auto flex">
-                      累积: <div class="font-bold w-10 flex justify-center text-black">{{ row?.shortLinkPv.totalPv > 99 ? '99+' : row?.shortLinkPv.totalPv }}</div>
-                    </div>
-                  </div>
+                  <ShortLinkCellPv :row="row" />
                 </template>
               </el-table-column>
               <el-table-column
@@ -388,26 +290,12 @@ onMounted(async () => {
                   width="150"
               >
                 <template #default="{ row }">
-                  <div class="w-full h-auto flex flex-col items-center">
-                    <div class="w-full text-gray-400 h-auto flex">
-                      今日: <div class="font-bold w-10 flex justify-center text-black">{{ row?.shortLinkUv.todayUv > 99 ? '99+' : row?.shortLinkUv.todayUv }}</div>
-                    </div>
-                    <div class="w-full text-gray-400 h-auto flex">
-                      累积: <div class="font-bold w-10 flex justify-center text-black">{{ row?.shortLinkUv.totalUv > 99 ? '99+' : row?.shortLinkUv.totalUv }}</div>
-                    </div>
-                  </div>
+                  <ShortLinkCellUv :row="row" />
                 </template>
               </el-table-column>
               <el-table-column prop="shortLinkUip" label="IP数" width="150">
                 <template #default="{ row }">
-                  <div class="w-full h-auto flex flex-col items-center">
-                    <div class="w-full text-gray-400 h-auto flex">
-                      今日: <div class="font-bold w-10 flex justify-center text-black">{{ row?.shortLinkUip.todayUip > 99 ? '99+' : row?.shortLinkUip.todayUip }}</div>
-                    </div>
-                    <div class="w-full text-gray-400 h-auto flex">
-                      累积: <div class="font-bold w-10 flex justify-center text-black">{{ row?.shortLinkUip.totalUip > 99 ? '99+' : row?.shortLinkUip.totalUip }}</div>
-                    </div>
-                  </div>
+                  <ShortLinkCellUip :row="row" />
                 </template>
               </el-table-column>
               <el-table-column label="操作" width="200" fixed="right">
