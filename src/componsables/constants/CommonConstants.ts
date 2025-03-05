@@ -17,3 +17,8 @@ export const USER_LOGIN_STORAGE_KET = 'shortLink:userinfo';
 export const REFRESH_TOKEN_GAP = 30 * 60 * 1000;
 
 
+
+// 默认用户头像
+export const DEFAULT_USER_AVATAR = 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png';
+
+
