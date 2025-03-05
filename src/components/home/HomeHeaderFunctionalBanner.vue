@@ -16,7 +16,7 @@ const router = useRouter();
       style="font-size: 15px;font-weight: 600;outline: none;"
       class="w-auto h-full flex items-center"
   >
-    <div class="text-[#e8e8e8] cursor-pointer px-4 hover:text-white">
+    <div class="text-[#e8e8e8] cursor-pointer px-4 hover:underline hover:text-white">
       Github
     </div>
     <el-dropdown>

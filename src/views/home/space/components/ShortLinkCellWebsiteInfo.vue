@@ -5,8 +5,8 @@ import type {SpaceTypes} from "@/componsables/apis/SpaceTypes.ts";
 import { ref } from "vue";
 import {copyTextToClipboard} from "@/utils/CopyUtil.ts";
 import {$message} from "@/componsables/element-plus.ts";
-import {LogUtil} from "@/utils/CommonLogUtil.ts";
 import {DEFAULT_SHORT_LINK_PREFIX_URL} from "@/componsables/constants/CommonConstants.ts";
+import {jumpUrl} from "@/utils/CommonUtil.ts";
 
 withDefaults(defineProps<{
   row?: SpaceTypes.ShortLinkIPageTableDataType
@@ -35,19 +35,6 @@ async function copyFullShortUrl(text: string) {
       message: '复制失败'
     });
   });
-}
-
-
-/**
- * 手动连接跳转
- * @param path
- */
-function jumpUrl(path: string) {
-  if (path && path !== '未知地址') {
-    window.open(path, '_blank');
-  } else {
-    LogUtil.info('未知地址');
-  }
 }
 </script>
 

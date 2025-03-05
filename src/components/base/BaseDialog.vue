@@ -44,6 +44,7 @@ watch(() => props?.visible, () => {
       :align-center="props?.alignCenter"
       :close-icon="props?.closeIcon"
       :fullscreen="props?.fullscreen"
+      :close-on-click-modal="false"
   >
     <template #default>
       <slot name="body" />

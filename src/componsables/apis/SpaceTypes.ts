@@ -71,6 +71,8 @@ export namespace SpaceTypes {
         describe: string; // 短连接描述
 
         gid: string; // 分组id
+
+        validDate: string | null; // 有效期
     }
 
 

@@ -251,6 +251,7 @@ onMounted(async () => {
                 :data="tableData"
                 fit
                 stripe
+                :row-style="{ height: '50px' }"
                 :header-cell-style="{ background: '#EEF0F5', textAlign: 'center', color: 'black', fontWeight: 'bold' }"
             >
               <el-table-column
