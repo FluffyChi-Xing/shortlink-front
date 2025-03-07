@@ -12,7 +12,6 @@ import ShortLinkCellPv from "@/views/home/space/components/ShortLinkCellPv.vue";
 import ShortLinkCellUip from "@/views/home/space/components/ShortLinkCellUip.vue";
 import ShortLinkCellUv from "@/views/home/space/components/ShortLinkCellUv.vue";
 import {$api} from "@/componsables/api.ts";
-import {LogUtil} from "@/utils/CommonLogUtil.ts";
 import {useRoute} from "vue-router";
 import {useCounterStore} from "@/stores/counter.ts";
 
@@ -57,7 +56,7 @@ async function getTableData() {
       shortLinkIPageData.value.push(item);
     });
     tableData.value = spaceTableDataGenerator(shortLinkIPageData.value);
-  }).catch((error) => {
+  }).catch((error: any) => {
     // LogUtil.error(error);
     console.log(error);
   })
@@ -217,7 +216,7 @@ function initBatchCreateShortLinkBindData() {
 
 
 // 短链接创建 -end
-// TODO: 处理编辑短链接弹窗 过期时间 选择的回显效果
+// TODO: 处理编辑短链接弹窗 过期时间 选择的回显效果 shortLinkValidType & shortLinkValidDate
 
 
 onMounted(async () => {
