@@ -28,6 +28,7 @@ export async function $request(url: string, options?: any | null, body?: any, ba
             'username': getUsername() ? getUsername() : '',
             'token': getToken() ? getToken() : '',
             'userId': getUserId()? getUserId() : '',
+            'uuid': getUUID() ? getUUID() : '',
             'realName': getRealName()? getRealName() : '',
             'charset': 'utf-8',
             'Access-Control-Allow-Origin': '*',
@@ -75,6 +76,19 @@ export function getRealName(): string {
  */
 export function getUserId(): string {
     return 'null';
+}
+
+
+/**
+ * 获取 uuid
+ */
+export function getUUID(): string | null {
+    let userInfo = localStorage.getItem($const.USER_LOGIN_STORAGE_KET);
+    if (userInfo) {
+        let uuid = JSON.parse(userInfo)?.key;
+        return uuid;
+    }
+    return null;
 }
 
 
