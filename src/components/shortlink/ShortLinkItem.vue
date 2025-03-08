@@ -23,8 +23,8 @@ const emits = defineEmits(['statistics', 'edit', 'delete', 'select']);
 
 
 
-function handleRoute(path: string | undefined) {
-  emits('select', props?.groupName)
+function handleRoute(path: string | any) {
+  emits('select', props?.gid)
   if (path) {
     router.push($const.DEFAULT_ROUTER_PREFIX + path)
   }

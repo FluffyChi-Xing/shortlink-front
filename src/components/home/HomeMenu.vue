@@ -15,11 +15,11 @@ const menuItemList = ref<MenuTypes.MenuType[]>(
         label: '首页',
         route: '/home',
       },
-      {
-        index: '2',
-        label: '仪表盘',
-        route: '/home/dashboard'
-      },
+      // {
+      //   index: '2',
+      //   label: '仪表盘',
+      //   route: '/home/dashboard'
+      // },
       {
         index: '3',
         label: '用户信息',

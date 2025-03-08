@@ -1,6 +1,5 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
 import NProgress from 'nprogress'
-import {getToken} from "@/componsables/request.ts";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -34,14 +33,14 @@ const router = createRouter({
               },
               component: () => import('@/views/home/user/index.vue')
             },
-            {
-              path: '/home/dashboard',
-              name: 'dashboard',
-              meta: {
-                title: '仪表盘'
-              },
-              component: () => import('@/views/home/dashboard/index.vue')
-            },
+            // {
+            //   path: '/home/dashboard',
+            //   name: 'dashboard',
+            //   meta: {
+            //     title: '仪表盘'
+            //   },
+            //   component: () => import('@/views/home/dashboard/index.vue')
+            // },
             {
               path: '/home/:groupName',
               name: 'space',
@@ -79,9 +78,15 @@ router.beforeEach(async (to,from, next) => {
   if (to.path === '/login') {
     next();
   }
-  if (getToken() === null || getToken() === undefined) {
-    next('/login');
-  }
+  // await checkUserLogin().then((res: boolean) => {
+  //   if (res) {
+  //     next();
+  //   } else {
+  //     // 移除 userInfo
+  //     removeUserInfo();
+  //     next('/login');
+  //   }
+  // })
   if (to.path === '/') {
     next('/home');
   }

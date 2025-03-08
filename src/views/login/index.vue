@@ -9,7 +9,7 @@ import {useRoute, useRouter} from "vue-router";
 import {$const} from "@/componsables/const.ts";
 import BaseCaptcha from "@/components/base/BaseCaptcha.vue";
 import {$api} from "@/componsables/api.ts";
-import {getCaptchaCodeKey, setCaptchaCodeKey, setUserInfo} from "@/componsables/apis/LoginPageApis.ts";
+import {getCaptchaCodeKey, removeUserInfo, setCaptchaCodeKey, setUserInfo} from "@/componsables/apis/LoginPageApis.ts";
 import type {UserTypes} from "@/componsables/apis/UserTypes";
 import {$message} from "@/componsables/element-plus.ts";
 
@@ -82,6 +82,7 @@ async function handleLogin() {
       token: res.data.token,
       refreshToken: res.data.refreshToken
     };
+    removeUserInfo(); // 如果存在 userInfo 为了防止出错先移除
     setUserInfo(userInfo);
     router.push('/home');
     $message({
@@ -90,6 +91,10 @@ async function handleLogin() {
     });
   }).catch((error: any) => {
     console.error(error)
+    $message({
+      message: '登录失败',
+      type: "error"
+    });
   })
 }
 

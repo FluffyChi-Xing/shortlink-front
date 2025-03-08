@@ -47,8 +47,8 @@ export function dateFormat(source: string | null, format: string) {
  * 检查日期是否过期
  * @param date
  */
-export function checkDateBefore(date: string | null): boolean {
-    if (date) {
+export function checkDateBefore(date: string | any): boolean {
+    if (date !== null && date !== undefined) {
         const now = new Date().getTime();
         const dateValue = new Date(date).getTime();
         if (dateValue > now) {

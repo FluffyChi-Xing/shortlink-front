@@ -30,6 +30,7 @@ function handleCreateGroup() {
 
 
 /** ======= 短链接分组-start ====== */
+const groupListCount = ref<number>(0);
 const groupStat = ref<boolean>(false);
 const groupEdit = ref<boolean>(false);
 const groupDel = ref<boolean>(false);
@@ -53,10 +54,10 @@ function handleDel(index: number | string) {
   groupDel.value = true;
 }
 // 分组选中事件
-function handleSelected(name: number | string) {
+function handleSelected(gid: string) {
   groupList.value.forEach(item => {
     item.selected = false; // 先将全部的分组选中状态设置为false
-    if (item.name === name) {
+    if (item.gid === gid) {
       item.selected = true; // 将当前选中的分组选中状态设置为true
     }
   })
@@ -82,7 +83,10 @@ function checkSelected() {
  */
 async function getGroupList() {
   await $api.getGroupList().then((res: any) => {
+    store.shortLinkGroup = []; // 每次重新获取分组时先清空，防止数据不一致
+    groupListCount.value = 0;
     res.data.forEach((item: any) => {
+      groupListCount.value += 1;
       groupList.value?.push({
         gid: item.gid,
         name: item.name,
@@ -126,6 +130,7 @@ watch(() => route.path, () => {
       <el-container>
         <el-aside width="200px">
           <HomeAside
+              :count="groupListCount"
               @create="handleCreateGroup"
           >
             <template #default>

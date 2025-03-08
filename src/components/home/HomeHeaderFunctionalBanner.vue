@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import {useRouter} from "vue-router";
+import {getUsername} from "../../componsables/request.ts";
+import {removeUserInfo} from "@/componsables/apis/LoginPageApis.ts";
 
 withDefaults(defineProps<{
   username?: string;
@@ -9,6 +11,16 @@ withDefaults(defineProps<{
 
 
 const router = useRouter();
+
+
+/**
+ * 退出登录
+ */
+function logout() {
+  // TODO: 向后端发送退出请求
+  removeUserInfo(); // 移除用户登录信息
+  router.push('/login');
+}
 </script>
 
 <template>
@@ -22,7 +34,7 @@ const router = useRouter();
     <el-dropdown>
       <template #default>
         <div class="text-[#e8e8e8] el-dropdown-link cursor-pointer px-4 hover:text-white">
-          {{ username }}
+          {{ getUsername() ? getUsername() : '默认用户' }}
         </div>
       </template>
       <template #dropdown>
@@ -30,7 +42,7 @@ const router = useRouter();
           <el-dropdown-item @click="() => router.push('/home/user')">
             个人信息
           </el-dropdown-item>
-          <el-dropdown-item>
+          <el-dropdown-item @click="logout">
             退出
           </el-dropdown-item>
         </el-dropdown-menu>

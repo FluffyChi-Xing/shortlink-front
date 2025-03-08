@@ -38,7 +38,7 @@ function groupCreateHandler() {
               class="w-full h-auto text-white text-[15px] font-bold leading-[24px] flex items-end"
           >
             短链分组
-            <div class="text-[10px] pl-1">共 {{props?.count}} 组</div>
+            <div class="text-[10px] pl-1">共 {{ props?.count ? props?.count : '0' }} 组</div>
           </div>
           <div class="w-auto ml-auto cursor-pointer h-auto flex items-center">
             <el-tooltip

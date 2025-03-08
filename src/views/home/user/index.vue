@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import BaseCard from "@/components/base/BaseCard.vue";
 import {ref, reactive, onMounted} from "vue";
-import type {UserTypes} from "@/componsables/apis/UserTypes";
-import BaseDialog from "@/components/base/BaseDialog.vue";
 import {DEFAULT_USER_AVATAR} from "@/componsables/constants/CommonConstants.ts";
+import {getUsername} from "@/componsables/request.ts";
+import {getUserDesensitizationInfo} from "@/componsables/apis/UserApis.ts";
+import {$message} from "@/componsables/element-plus.ts";
+import {useCounterStore} from "@/stores/counter.ts";
 
 
 /** ======= 用户信息页面-start ====== */
+const store = useCounterStore();
 const userInfo = reactive({
-  username: '默认用户名',
+  username: getUsername() ? getUsername() : '默认用户名',
   phone: '默认手机号',
   nickName: '默认姓名',
   email: '默认邮箱'
@@ -28,6 +31,31 @@ function resetData() {
   email.value = '';
 }
 
+/**
+ * 获取用户信息
+ */
+async function getUserInfo() {
+  // 如果缓存中不存在用户数据，那么就请求接口获取用户数据
+  // 否则使用缓存数据，避免重复请求接口，提升用户体验
+  if (!store.userInfo) {
+    await getUserDesensitizationInfo().then((res: any) => {
+      store.userInfo = {
+        ...res
+      };
+      userInfo.email = res?.email;
+      userInfo.nickName = res?.username;
+      userInfo.phone = res?.phone;
+      userInfo.username = res?.realName;
+      // console.log(res)
+    }).catch((error: any) => {
+      $message({
+        type: 'error',
+        message: error
+      });
+    })
+  }
+}
+
 function cancel() {
   currentTabs.value = '0';
   resetData();
@@ -35,14 +63,23 @@ function cancel() {
 
 
 function initDataBinding() {
-  username.value = userInfo.username;
-  phone.value = userInfo.phone;
-  nickName.value = userInfo.nickName;
-  email.value = userInfo.email;
+  // 如果缓存中存在用户数据，那么就使用缓存中的数据
+  if (!store.userInfo) {
+    username.value = userInfo.username;
+    phone.value = userInfo.phone;
+    nickName.value = userInfo.nickName;
+    email.value = userInfo.email;
+  } else {
+    username.value = store.userInfo.username;
+    phone.value = store.userInfo.phone;
+    nickName.value = store.userInfo.realName;
+    email.value = store.userInfo.email;
+  }
 }
 
 
-onMounted(() => {
+onMounted(async () => {
+  await getUserInfo();
   initDataBinding();
 })
 /** ======= 用户信息页面-end ====== */

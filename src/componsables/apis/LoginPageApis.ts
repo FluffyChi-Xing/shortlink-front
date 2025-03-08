@@ -151,3 +151,29 @@ export function testLogUtilFunc() {
     LogUtil.info('测试 log 模块函数');
     LogUtil.alert('测试 log 模块函数');
 }
+
+
+/**
+ * 判断用户是否登录接口
+ */
+export async function checkUserLogin(): Promise<boolean> {
+    let userInfo = getUserInfo();
+    let loginStats = false;
+    if (userInfo) {
+        await $request(
+            $const.ADMIN_ROUTE_PREFIX + `/checkLogin?username=${userInfo?.username}&uuid=${userInfo?.key}`,
+            $enum.RestParamsEnums.GET,
+            null,
+            $const.SERVER_HOST
+        ).then(res => {
+            if (res.data.code >=200 && res.data.code < 300) {
+                loginStats = true;
+            }
+            loginStats = false;
+        }).catch((error: any) => {
+            LogUtil.error(error);
+            loginStats = false;
+        })
+    }
+    return loginStats;
+}
