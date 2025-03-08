@@ -14,6 +14,8 @@ import ShortLinkCellUv from "@/views/home/space/components/ShortLinkCellUv.vue";
 import {$api} from "@/componsables/api.ts";
 import {useRoute} from "vue-router";
 import {useCounterStore} from "@/stores/counter.ts";
+import {$message} from "@/componsables/element-plus.ts";
+import dayjs from "dayjs";
 
 
 const pageSizes = ref<number[]>([5, 10, 15]);
@@ -172,6 +174,59 @@ function createShortLinkHandler() {
 
 function batchCreateShortLinkHandler() {
   batchCreateFlag.value = true;
+}
+
+
+/**
+ * 获取网站域名
+ * @param url
+ */
+function getWebsiteDomainByFullLink(url: string | any): string {
+  if (url) {
+    try {
+      const parsedUrl = new URL(url);
+      return parsedUrl.hostname;
+    } catch (error) {
+      console.error('Invalid URL:', error);
+    }
+  }
+  return '';
+}
+
+
+/**
+ * 创建短链接函数
+ */
+async function createShortLink() {
+  await $api.createShortLink(
+      currentGid.value,
+      1,
+      Number(createShortLinkValidType.value),
+      dayjs(createShortLinkValidDate.value).format('YYYY-MM-DD'),
+      getWebsiteDomainByFullLink(createShortLinkOriginUrl.value),
+      createShortLinkDescribe.value as string,
+      createShortLinkOriginUrl.value as string
+  ).then(async (res: any) => {
+    $message({
+      type: 'info',
+      message: res
+    })
+    // 关闭窗口
+    createFlag.value = false;
+    // 初始化参数
+    initCreateShortLinkBindData();
+    // 重新拉取分页
+    await getTableData();
+  }).catch((error: any) => {
+    $message({
+      type: 'error',
+      message: '创建短链接失败'
+    })
+    // 关闭窗口
+    createFlag.value = false;
+    // 初始化参数
+    initCreateShortLinkBindData();
+  });
 }
 
 
@@ -516,7 +571,7 @@ watch(() => route.params.groupName, async () => {
     </template>
     <template #footer>
       <div class="w-full h-auto flex items-center justify-end">
-        <el-button type="primary">确认</el-button>
+        <el-button @click="createShortLink" type="primary">确认</el-button>
         <el-button @click="cancelCreateShortLinkHandler" type="info">取消</el-button>
       </div>
     </template>

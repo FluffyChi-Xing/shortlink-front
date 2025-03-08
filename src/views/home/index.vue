@@ -14,6 +14,7 @@ import SpaceAccessHistory from "@/components/space/SpaceAccessHistory.vue";
 import {$api} from "@/componsables/api.ts";
 import {LogUtil} from "@/utils/CommonLogUtil.ts";
 import {useCounterStore} from "@/stores/counter.ts";
+import {$message} from "@/componsables/element-plus.ts";
 
 
 
@@ -85,6 +86,7 @@ async function getGroupList() {
   await $api.getGroupList().then((res: any) => {
     store.shortLinkGroup = []; // 每次重新获取分组时先清空，防止数据不一致
     groupListCount.value = 0;
+    groupList.value = [];// 初始化分组列表
     res.data.forEach((item: any) => {
       groupListCount.value += 1;
       groupList.value?.push({
@@ -103,6 +105,39 @@ async function getGroupList() {
     LogUtil.error(error);
   })
 }
+
+// 创建新的短链接分组-start
+function cancelCreateGroup() {
+  groupName.value = '';
+  dialogVisible.value = false;
+}
+
+
+/**
+ * 处理创建分组事件
+ */
+async function createGroupHandler() {
+  if (groupName.value) {
+    await $api.saveShortLinkGroup(groupName.value).then(async (res: string) => {
+      $message({
+        type: 'info',
+        message: res
+      })
+      // 刷新分组列表
+      await getGroupList();
+      // 关闭弹窗
+      dialogVisible.value = false;
+    }).catch();
+  } else {
+    $message({
+      type: 'warning',
+      message: '分组名称不能为空'
+    })
+  }
+}
+
+
+// 创建新的短链接分组-end
 
 
 
@@ -187,8 +222,8 @@ watch(() => route.path, () => {
     </template>
     <template #footer>
       <div class="w-full h-auto justify-end items-center">
-        <el-button @click="() => dialogVisible = false" type="info">取消</el-button>
-        <el-button type="primary">确认</el-button>
+        <el-button @click="createGroupHandler" type="primary">确认</el-button>
+        <el-button @click="cancelCreateGroup" type="info">取消</el-button>
       </div>
     </template>
   </BaseDialog>

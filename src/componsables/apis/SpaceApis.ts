@@ -1,5 +1,10 @@
 import type {SpaceTypes} from "@/componsables/apis/SpaceTypes.ts";
 import {dateFormat} from "@/componsables/annotation/DateUtilAnnotation.ts";
+import {$request} from "@/componsables/request.ts";
+import {LogUtil} from "@/utils/CommonLogUtil.ts";
+import {$const} from "@/componsables/const.ts";
+import {BUSINESS_SERVICE_PREFIX} from "@/componsables/constants/LoginConstants.ts";
+import {$enum} from "@/componsables/enums.ts";
 
 
 /**
@@ -50,5 +55,55 @@ export function spaceTableDataGenerator(shortLinkItemList: SpaceTypes.ShortLinkI
         return tableData;
     } else {
         return tableData;
+    }
+}
+
+
+/**
+ * 创建短连接
+ * @param gid
+ * @param createdType
+ * @param validDateType
+ * @param validDate
+ * @param domain
+ * @param describe
+ * @param originUrl
+ */
+export async function createShortLink(
+    gid: string,
+    createdType: number,
+    validDateType: number,
+    validDate: string,
+    domain: string,
+    describe: string,
+    originUrl: string
+): Promise<any> {
+    if (gid && createdType && validDateType && validDate && domain && describe && originUrl) {
+        let formData = new FormData();
+        formData.append('gid', gid);
+        formData.append('createdType', createdType.toString());
+        formData.append('validDateType', validDateType.toString());
+        formData.append('validDate', validDate);
+        formData.append('domain', domain);
+        formData.append('describe', describe);
+        formData.append('originUrl', originUrl);
+        return await $request(
+            $const.BUSINESS_SERVICE_PREFIX + '/link/create',
+            $enum.RestParamsEnums.POST,
+            formData,
+            $const.BUSINESS_SERVER_HOST
+        ).then((res: any): Promise<string> => {
+            if (res.code >= 200 && res.code < 300) {
+                return Promise.resolve(res.data);
+            } else {
+                console.log(res);
+                return Promise.resolve("创建短连接失败");
+            }
+        }).catch((error: any) => {
+            LogUtil.error(error);
+            return Promise.reject("创建短连接失败");
+        });
+    } else {
+        return Promise.reject('参数错误');
     }
 }
