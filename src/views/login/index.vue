@@ -61,9 +61,7 @@ async function handleRefreshCaptcha() {
 }
 
 async function handleLogin() {
-  // destroyVantaClient(VantaEnums.FOG, options);
-  // await router.push('/home');
-  // TODO: 校验
+  // TODO: 表单校验
   // 组装 UserLoginReqDto
   let userLoginReqDto = {
     username: username.value as string,
@@ -74,7 +72,7 @@ async function handleLogin() {
   await $api.userLogin(
       userLoginReqDto
   ).then((res: any) => {
-    console.log(res.data);
+    // console.log(res.data);
     // 组装 UserLoginInfo
     let userInfo: UserTypes.UserLoginInfoType = {
       username: username.value as string,

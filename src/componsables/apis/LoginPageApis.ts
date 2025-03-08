@@ -156,24 +156,26 @@ export function testLogUtilFunc() {
 /**
  * 判断用户是否登录接口
  */
-export async function checkUserLogin(): Promise<boolean> {
+export async function checkUserLogin(): Promise<any> {
     let userInfo = getUserInfo();
-    let loginStats = false;
     if (userInfo) {
-        await $request(
+        return await $request(
             $const.ADMIN_ROUTE_PREFIX + `/checkLogin?username=${userInfo?.username}&uuid=${userInfo?.key}`,
             $enum.RestParamsEnums.GET,
             null,
             $const.SERVER_HOST
-        ).then(res => {
-            if (res.data.code >=200 && res.data.code < 300) {
-                loginStats = true;
+        ).then((res: any) => {
+            if (res.code >=200 && res.code < 300) {
+                // console.log(res)
+                return Promise.resolve(true);
+            } else {
+                console.log(res)
+                return Promise.resolve(false);
             }
-            loginStats = false;
         }).catch((error: any) => {
             LogUtil.error(error);
-            loginStats = false;
+            return Promise.reject(false);
         })
     }
-    return loginStats;
+    return Promise.reject(false);
 }

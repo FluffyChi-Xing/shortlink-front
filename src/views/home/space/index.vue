@@ -157,8 +157,8 @@ const createShortLinkValidType = ref<string>('0');
 const createShortLinkValidDate = ref<string>();
 // 批量创建短链接
 const batchCreateFlag = ref<boolean>(false);
-const batchCreateShortLinkUrl = ref<string[]>([]);
-const batchCreateShortLinkDescribes = ref<string[]>([]);
+const batchCreateShortLinkUrl = ref<string>();
+const batchCreateShortLinkDescribes = ref<string>();
 const batchCreateShortLinkGroup = ref<string>();
 const batchCreateShortLinkValidType = ref<string>('0');
 const batchCreateShortLinkValidDate = ref<string>();
@@ -194,41 +194,6 @@ function getWebsiteDomainByFullLink(url: string | any): string {
 }
 
 
-/**
- * 创建短链接函数
- */
-async function createShortLink() {
-  await $api.createShortLink(
-      currentGid.value,
-      1,
-      Number(createShortLinkValidType.value),
-      dayjs(createShortLinkValidDate.value).format('YYYY-MM-DD'),
-      getWebsiteDomainByFullLink(createShortLinkOriginUrl.value),
-      createShortLinkDescribe.value as string,
-      createShortLinkOriginUrl.value as string
-  ).then(async (res: any) => {
-    $message({
-      type: 'info',
-      message: res
-    })
-    // 关闭窗口
-    createFlag.value = false;
-    // 初始化参数
-    initCreateShortLinkBindData();
-    // 重新拉取分页
-    await getTableData();
-  }).catch((error: any) => {
-    $message({
-      type: 'error',
-      message: '创建短链接失败'
-    })
-    // 关闭窗口
-    createFlag.value = false;
-    // 初始化参数
-    initCreateShortLinkBindData();
-  });
-}
-
 
 /**
  * 取消创建短链接函数
@@ -246,6 +211,34 @@ function cancelBatchCreateShortLinkHandler() {
 
 
 /**
+ * 删除短链接函数
+ */
+async function deleteShortLink() {
+  await $api.removeShortLink2Bin(
+      currentRow.value?.shortLinkWebsiteInfo.fullShortUrl as string,
+      currentGid.value as string
+  ).then(async (res: any) => {
+    $message({
+      type: 'info',
+      message: res
+    });
+    // 关闭窗口
+    delFlag.value = false;
+    // 刷新数据
+    await getTableData();
+    // TODO: 通知刷新分组列表
+  }).catch((error: any) =>{
+    // 关闭窗口
+    delFlag.value = false;
+    $message({
+      type: 'error',
+      message: error
+    });
+  });
+}
+
+
+/**
  * 关闭窗口数据初始化函数
  */
 function initCreateShortLinkBindData() {
@@ -258,8 +251,8 @@ function initCreateShortLinkBindData() {
 
 
 function initBatchCreateShortLinkBindData() {
-  batchCreateShortLinkUrl.value = [];
-  batchCreateShortLinkDescribes.value = [];
+  batchCreateShortLinkUrl.value = '';
+  batchCreateShortLinkDescribes.value = '';
   batchCreateShortLinkGroup.value = '';
   batchCreateShortLinkValidType.value = '0';
   batchCreateShortLinkValidDate.value = '';
@@ -267,9 +260,78 @@ function initBatchCreateShortLinkBindData() {
 
 
 // 短链接创建 -start
+/**
+ * 创建短链接函数
+ */
+async function createShortLink() {
+  await $api.createShortLink(
+      currentGid.value,
+      1,
+      Number(createShortLinkValidType.value),
+      dayjs(createShortLinkValidDate.value).format('YYYY-MM-DD'),
+      getWebsiteDomainByFullLink(createShortLinkOriginUrl.value),
+      createShortLinkDescribe.value as string,
+      createShortLinkOriginUrl.value as string
+  ).then(async (res: any) => {
+    $message({
+      type: 'info',
+      message: '创建成功'
+    })
+    // 关闭窗口
+    createFlag.value = false;
+    // 初始化参数
+    initCreateShortLinkBindData();
+    // TODO： 通知刷新分组列表，用来更新分组内短连接数
+    // 重新拉取分页
+    await getTableData();
+  }).catch((error: any) => {
+    $message({
+      type: 'error',
+      message: '创建短链接失败'
+    })
+    // 关闭窗口
+    createFlag.value = false;
+    // 初始化参数
+    initCreateShortLinkBindData();
+  });
+}
 
-
-
+/**
+ * 批量创建短链接处理函数
+ */
+// TODO: 批量创建短链接接口异常
+async function handlerBatchCreateShortLink() {
+  await $api.batchSaveShortLinkToGroup(
+      batchCreateShortLinkUrl.value as string,
+      batchCreateShortLinkDescribes.value as string,
+      currentGid.value,
+      1,
+      Number(batchCreateShortLinkValidType.value),
+      dayjs(batchCreateShortLinkValidDate.value).format('YYYY-MM-DD')
+  ).then(async (res: any) => {
+    // 关闭窗口
+    batchCreateFlag.value = false;
+    // 显示结果
+    $message({
+      type: 'info',
+      message: '批量创建成功'
+    })
+    // 初始化参数
+    initBatchCreateShortLinkBindData();
+    // 重新拉取分页
+    await getTableData();
+  }).catch((error: any) => {
+    // 关闭窗口
+    batchCreateFlag.value = false;
+    // 初始化参数
+    initBatchCreateShortLinkBindData();
+    // 显示结果
+    $message({
+      type: 'error',
+      message: '批量创建失败'
+    });
+  });
+}
 // 短链接创建 -end
 // TODO: 处理编辑短链接弹窗 过期时间 选择的回显效果 shortLinkValidType & shortLinkValidDate
 
@@ -490,7 +552,7 @@ watch(() => route.params.groupName, async () => {
     </template>
     <template #footer>
       <div class="w-full h-auto flex items-center justify-end">
-        <el-button type="primary">确认</el-button>
+        <el-button @click="deleteShortLink" type="primary">确认</el-button>
         <el-button @click="() => delFlag = false" type="info">取消</el-button>
       </div>
     </template>
@@ -635,7 +697,7 @@ watch(() => route.params.groupName, async () => {
     </template>
     <template #footer>
       <div class="w-full h-auto flex items-center justify-end">
-        <el-button type="primary">确认</el-button>
+        <el-button @click="handlerBatchCreateShortLink" type="primary">确认</el-button>
         <el-button @click="cancelBatchCreateShortLinkHandler" type="info">取消</el-button>
       </div>
     </template>

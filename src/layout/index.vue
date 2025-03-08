@@ -1,49 +1,75 @@
 <script setup lang="ts">
-import {onMounted} from "vue";
-import { ref } from "vue";
-import {workerInterval} from "@/utils/TimeUtil.ts";
-import type {UserTypes} from "@/componsables/apis/UserTypes";
-import {getUserInfo, removeUserInfo, setUserInfo, userRefreshToken} from "@/componsables/apis/LoginPageApis.ts";
-import {setWorkerInterval} from "set-worker-timer";
-import {$const} from "@/componsables/const.ts";
-import {useRouter} from "vue-router";
+import {watch} from "vue";
+import {
+  checkUserLogin,
+  removeUserInfo,
+} from "@/componsables/apis/LoginPageApis.ts";
+import {useRoute, useRouter} from "vue-router";
 
 
 
 
 const router = useRouter();
+const route = useRoute();
 
 //启动定时刷新token服务
-async function handleTokenRefresher() {
-  let userInfo: UserTypes.UserLoginInfoType = getUserInfo();
-  let username = userInfo.username;
-  let refreshToken = userInfo.refreshToken;
-  let key = userInfo.key;
-  if (refreshToken !== null && key !== null) {
-    // 每 30min 刷新一次登录token
-    setWorkerInterval(() => userRefreshToken().then((res: any) => {
-      userInfo = {
-        username: username,
-        key: res.data.key,
-        token: res.data.token,
-        refreshToken: res.data.refreshToken
-      }
-      setUserInfo(userInfo);
-    }).catch((error: any) => {
-      console.error(error);
+// async function handleTokenRefresher() {
+//   let userInfo: UserTypes.UserLoginInfoType = getUserInfo();
+//   let username = userInfo.username;
+//   let refreshToken = userInfo.refreshToken;
+//   let key = userInfo.key;
+//   if (refreshToken !== null && key !== null) {
+//     // 每 30min 刷新一次登录token
+//     setWorkerInterval(() => userRefreshToken().then((res: any) => {
+//       userInfo = {
+//         username: username,
+//         key: res.data.key,
+//         token: res.data.token,
+//         refreshToken: res.data.refreshToken
+//       }
+//       setUserInfo(userInfo);
+//     }).catch((error: any) => {
+//       console.error(error);
+//       removeUserInfo();
+//       router.push('/login');
+//         })
+//         , 30 * 60 * 1000);
+//   }
+//   // console.log(userInfo);
+// }
+
+
+/**
+ * 检查用户登录情况
+ */
+async function checkLogin() {
+  await checkUserLogin().then((res: any) => {
+    console.log('检查登录状态:', res);
+    if (!res) {
+      // 未登录，跳转登录页面
       removeUserInfo();
       router.push('/login');
-        })
-        , 30 * 60 * 1000);
-  }
-  // console.log(userInfo);
+    }
+  }).catch((error: any) => {
+    console.error(error);
+    removeUserInfo();
+    router.push('/login');
+  });
 }
 
-onMounted(async () => {
-  // TODO: 暂不开启定时刷新token服务
-  // await handleTokenRefresher();
-  console.log('主页面已挂载');
+
+
+watch(() => route.path, async () => {
+  // 监听路由变化，检查用户登录情况
+  await checkLogin();
 });
+
+
+
+// onMounted(async () => {
+//   // await handleTokenRefresher();
+//   console.log('主页面已挂载');
+// });
 </script>
 
 <template>

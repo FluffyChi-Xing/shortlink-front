@@ -16,4 +16,26 @@ export namespace UserTypes {
 
         username: string;
     }
+
+
+    export interface UserLoginInfoType {
+        username: string;
+
+        token: string;
+
+        refreshToken: string;
+
+        key: string;
+    }
+
+
+    export interface UserLoginReqDtoType {
+        username: string;
+
+        password: string;
+
+        captcha: string;
+
+        captchaKey: string;
+    }
 }
