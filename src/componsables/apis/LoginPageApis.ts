@@ -115,7 +115,7 @@ export async function setUserInfo(UserInfo: UserTypes.UserLoginInfoType) {
     if (userInfos !== null) {
         removeUserInfo();
     }
-    console.log(UserInfo)
+    // console.log(UserInfo)
     localStorage.setItem($const.USER_LOGIN_STORAGE_KET, JSON.stringify(UserInfo));
 }
 

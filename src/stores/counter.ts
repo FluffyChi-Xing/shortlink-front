@@ -10,9 +10,11 @@ export const useCounterStore = defineStore('counter', () => {
   const shortLinkGroup = ref<ShortLinkTypes.shortLinkGroupTypes[]>([]);
 
   const userInfo = ref<UserTypes.UserInfoTypes>();
+
+  const refreshFlag = ref<boolean>(false); // 通知页面刷新标志
   function increment() {
     count.value++
   }
 
-  return { count, doubleCount, increment, shortLinkGroup, userInfo }
+  return { count, doubleCount, increment, shortLinkGroup, userInfo, refreshFlag }
 })

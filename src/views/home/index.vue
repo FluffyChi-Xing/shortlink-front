@@ -45,14 +45,65 @@ function handleStatistics(index: string | number) {
   currentGroupIndex.value = index;
 }
 // 短链接编辑事件
-function handleEdit(index: number | string) {
-  currentGroupIndex.value = index;
+function handleEdit(params: string[]) {
+  groupName.value = params[0] as string;
+  currentGroupIndex.value = params[1] as string;
   groupEdit.value = true;
 }
+
+
+/**
+ * 编辑短链接分组信息
+ */
+async function changeGroupInfoHandler() {
+  await $api.updateShortLinkGroup(
+      currentGroupIndex.value as string,
+      groupName.value
+  ).then(async (res: string) => {
+    $message({
+      type: 'info',
+      message: res
+    });
+    // 刷新分组列表
+    await getGroupList();
+    // 关闭窗口
+    groupEdit.value = false;
+  }).catch(error => {
+    $message({
+      type: 'error',
+      message: error
+    });
+    // 关闭窗口
+    groupEdit.value = false;
+  });
+}
+
+
+
 // 短链接删除事件
-function handleDel(index: number | string) {
-  currentGroupIndex.value = index;
+function handleDel(gid: number | string) {
+  currentGroupIndex.value = gid;
   groupDel.value = true;
+}
+
+// TODO: 后端删除短链接分组接口存在异常，无法删除分组
+async function deleteShortLinkGroup() {
+  await $api.deleteGroupItem(currentGroupIndex.value).then(async (res: string) => {
+    $message({
+      type: 'info',
+      message: res
+    });
+    // 刷新分组列表
+    await getGroupList();
+    // 关闭窗口
+    groupDel.value = false;
+  }).catch(error => {
+    $message({
+      type: 'error',
+      message: error
+    });
+    groupDel.value = false;
+  });
 }
 // 分组选中事件
 function handleSelected(gid: string) {
@@ -149,6 +200,14 @@ onMounted(async () => {
 watch(() => route.path, () => {
   checkSelected();
 }, { deep: true })
+
+
+/**
+ * 刷新数据检测
+ */
+watch(() => store.refreshFlag, async () => {
+  await getGroupList();
+}, { deep: true });
 /** ======= 短链接分组-end ====== */
 </script>
 
@@ -251,8 +310,8 @@ watch(() => route.path, () => {
     </template>
     <template #footer>
       <div class="w-full h-auto flex justify-end items-center">
-        <el-button @click="() => groupStat = false" type="info">取消</el-button>
         <el-button type="primary">确认</el-button>
+        <el-button @click="() => groupStat = false" type="info">取消</el-button>
       </div>
     </template>
   </BaseDialog>
@@ -267,7 +326,7 @@ watch(() => route.path, () => {
           label="分组名称"
       >
         <el-input
-            v-model="currentGroupIndex"
+            v-model="groupName"
             placeholder="请输入分组名称"
             clearable
             prefix-icon="Edit"
@@ -277,8 +336,8 @@ watch(() => route.path, () => {
     </template>
     <template #footer>
       <div class="w-full h-auto flex justify-end items-center">
+        <el-button @click="changeGroupInfoHandler" type="primary">确认</el-button>
         <el-button type="info" @click="() => groupEdit = false">取消</el-button>
-        <el-button type="primary">确认</el-button>
       </div>
     </template>
   </BaseDialog>
@@ -294,8 +353,8 @@ watch(() => route.path, () => {
     </template>
     <template #footer>
       <div class="w-full h-auto flex justify-end items-center">
+        <el-button @click="deleteShortLinkGroup" type="danger">删除</el-button>
         <el-button type="info" @click="() => groupDel = false">取消</el-button>
-        <el-button type="danger">删除</el-button>
       </div>
     </template>
   </BaseDialog>

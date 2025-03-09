@@ -19,10 +19,11 @@ export function spaceTableDataGenerator(shortLinkItemList: SpaceTypes.ShortLinkI
             // 短连接信息
             let shortLinkInfo: SpaceTypes.ShortLinkIPageInfoType = {
                 favicon: item.favicon,
-                createTime: dateFormat(item.createTime, 'YYYY-MM-DD hh:mm:ss'),
+                createTime: dateFormat(item.createTime, 'YYYY-MM-DD'),
                 describe: item.description,
                 gid: item.gid,
-                validDate: dateFormat(item.validDate, 'YYYY-MM-DD hh:mm:ss'),
+                validDate: dateFormat(item.validDate, 'YYYY-MM-DD'),
+                validDateType: item.validDateType
             };
             // 短连接网址信息
             let shortLinkWebsiteInfo: SpaceTypes.ShortLinkWebsiteInfoType = {

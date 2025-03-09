@@ -42,3 +42,64 @@ export async function saveShortLinkGroup(groupName: string | null): Promise<any>
         });
     }
 }
+
+
+/**
+ * 删除短链接分组失败
+ * @param gid
+ */
+export async function deleteGroupItem(gid: string | any): Promise<string> {
+    if (gid) {
+        return await $request(
+            $const.ADMIN_SERVICE_PREFIX + `/group/delete?gid=${gid}`,
+            $enum.RestParamsEnums.GET,
+            null,
+            $const.SERVER_HOST
+        ).then((res: any): Promise<string> => {
+            if (res.code >= 200 && res.code < 300) {
+                return Promise.resolve("删除成功");
+            } else {
+                return Promise.reject("删除失败," + res.message);
+            }
+        }).catch(error => {
+            LogUtil.error(error);
+            return Promise.reject("删除失败");
+        });
+    } else {
+        return Promise.reject('参数错误');
+    }
+}
+
+
+/**
+ * 更新短连接分组接口
+ * @param gid
+ * @param groupName
+ */
+export async function updateShortLinkGroup(
+    gid: string,
+    groupName: string
+): Promise<string> {
+    if (gid && groupName) {
+        let formData = new FormData();
+        formData.append('gid', gid);
+        formData.append('groupName', groupName);
+        return await $request(
+            $const.ADMIN_SERVICE_PREFIX + '/group/update',
+            $enum.RestParamsEnums.POST,
+            formData,
+            $const.SERVER_HOST // baseUrl
+        ).then((res: any) => {
+            if (res.code >= 200 && res.code < 300) {
+                return Promise.resolve("更新成功");
+            } else {
+                return Promise.reject("更新失败");
+            }
+        }).catch(error => {
+            LogUtil.error(error);
+            return Promise.reject("更新失败");
+        });
+    } else {
+        return Promise.reject('参数错误');
+    }
+}

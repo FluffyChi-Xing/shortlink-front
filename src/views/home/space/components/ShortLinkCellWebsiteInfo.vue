@@ -7,6 +7,7 @@ import {copyTextToClipboard} from "@/utils/CopyUtil.ts";
 import {$message} from "@/componsables/element-plus.ts";
 import {DEFAULT_SHORT_LINK_PREFIX_URL} from "@/componsables/constants/CommonConstants.ts";
 import {jumpUrl} from "@/utils/CommonUtil.ts";
+import {checkDateBefore} from "@/componsables/annotation/DateUtilAnnotation.ts";
 
 withDefaults(defineProps<{
   row?: SpaceTypes.ShortLinkIPageTableDataType
@@ -39,7 +40,10 @@ async function copyFullShortUrl(text: string) {
 </script>
 
 <template>
-  <div class="w-full h-auto flex items-center">
+  <div
+      :class="checkDateBefore(row?.shortLinkInfo.validDate) ? '' : 'cursor-not-allowed grayscale opacity-50'"
+      class="w-full h-auto flex items-center"
+  >
     <div
         style="width: calc(100% - 40px);"
         class="w-full h-auto flex items-center"
@@ -49,7 +53,7 @@ async function copyFullShortUrl(text: string) {
             @click="jumpUrl(DEFAULT_SHORT_LINK_PREFIX_URL + row?.shortLinkWebsiteInfo.fullShortUrl)"
             class="w-full h-auto cursor-pointer text-blue-400 hover:underline flex items-center overflow-hidden text-ellipsis"
         >
-          {{ row?.shortLinkWebsiteInfo.fullShortUrl ? row?.shortLinkWebsiteInfo.fullShortUrl : '未知地址' }}
+          http://{{ row?.shortLinkWebsiteInfo.fullShortUrl ? row?.shortLinkWebsiteInfo.fullShortUrl : '未知地址' }}
         </div>
         <div class="w-full h-auto text-gray-400 flex items-center overflow-hidden text-ellipsis">
           {{ row?.shortLinkWebsiteInfo.originUrl ? row?.shortLinkWebsiteInfo.originUrl : '未知地址' }}

@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<{
 const flag = ref<boolean>(false);
 const router = useRouter();
 const selected = ref<boolean>(props?.selected);
+const shortLinkCount = ref<number>(props.count);
 const emits = defineEmits(['statistics', 'edit', 'delete', 'select']);
 
 
@@ -31,9 +32,19 @@ function handleRoute(path: string | any) {
 }
 
 
+
+// TODO: 后端统计短链接分组短连接数量的 sql 忘记添加筛选可用分组的条件
 watch(() => props?.selected, (val: boolean) => {
   selected.value = val;
 })
+
+
+/**
+ * 刷新短链接分组短链接数量
+ */
+watch(() => props?.count, () => {
+  shortLinkCount.value = props?.count;
+});
 </script>
 
 <template>
@@ -65,7 +76,7 @@ watch(() => props?.selected, (val: boolean) => {
           :class="flag ? 'hidden' : 'flex'"
           class="w-full h-full font-bold justify-end text-theme-color overflow-hidden"
       >
-        {{ count > 99 ? '99+' : count }}
+        {{ shortLinkCount > 99 ? '99+' : shortLinkCount }}
       </div>
       <!-- other functional components -->
       <div
@@ -92,12 +103,12 @@ watch(() => props?.selected, (val: boolean) => {
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item
-                  @click="emits('edit', props?.groupName)"
+                  @click="emits('edit', [props?.groupName, props?.gid])"
               >
                 编辑
               </el-dropdown-item>
               <el-dropdown-item
-                  @click="emits('delete', props?.groupName)"
+                  @click="emits('delete', props?.gid)"
               >
                 删除
               </el-dropdown-item>

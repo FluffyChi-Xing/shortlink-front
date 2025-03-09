@@ -73,6 +73,8 @@ export namespace SpaceTypes {
         gid: string; // 分组id
 
         validDate: string | null; // 有效期
+
+        validDateType: number; // 有效期类型 0: 永久有效, 1: 自定义
     }
 
 

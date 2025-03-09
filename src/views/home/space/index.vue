@@ -80,6 +80,8 @@ function editShortLink(row: SpaceTypes.ShortLinkIPageTableDataType) {
   editFlag.value = true;
   currentRow.value = row;
   initEditFormData(); // 在打开编辑短链接弹窗的时候初始化回显数据
+  shortLinkValidType.value = row?.shortLinkInfo.validDateType.toString();
+  validDate.value = row?.shortLinkInfo.validDate as string;
 }
 
 
@@ -211,6 +213,14 @@ function cancelBatchCreateShortLinkHandler() {
 
 
 /**
+ * 通知刷新页面标志函数
+ */
+function emitFreshPage() {
+  store.refreshFlag = !store.refreshFlag;
+}
+
+
+/**
  * 删除短链接函数
  */
 async function deleteShortLink() {
@@ -226,7 +236,8 @@ async function deleteShortLink() {
     delFlag.value = false;
     // 刷新数据
     await getTableData();
-    // TODO: 通知刷新分组列表
+    // 通知刷新页面
+    emitFreshPage();
   }).catch((error: any) =>{
     // 关闭窗口
     delFlag.value = false;
@@ -281,7 +292,8 @@ async function createShortLink() {
     createFlag.value = false;
     // 初始化参数
     initCreateShortLinkBindData();
-    // TODO： 通知刷新分组列表，用来更新分组内短连接数
+    // 通知刷新分组列表，用来更新分组内短连接数
+    emitFreshPage();
     // 重新拉取分页
     await getTableData();
   }).catch((error: any) => {
@@ -320,6 +332,8 @@ async function handlerBatchCreateShortLink() {
     initBatchCreateShortLinkBindData();
     // 重新拉取分页
     await getTableData();
+    // 刷新页面
+    emitFreshPage();
   }).catch((error: any) => {
     // 关闭窗口
     batchCreateFlag.value = false;
