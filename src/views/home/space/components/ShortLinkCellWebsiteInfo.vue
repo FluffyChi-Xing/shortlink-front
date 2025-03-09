@@ -66,7 +66,7 @@ async function copyFullShortUrl(text: string) {
           trigger="click"
           effect="light"
           placement="bottom"
-          width="172"
+          width="164"
       >
         <template #reference>
           <el-image
@@ -80,7 +80,7 @@ async function copyFullShortUrl(text: string) {
         <template #default>
           <!-- qrcode -->
           <div class="w-full h-[132px] flex items-center">
-            <BaseQRCode :flag="downLoadFlag" :link="row?.shortLinkWebsiteInfo.fullShortUrl" :width="200" :height="200" />
+            <BaseQRCode :flag="downLoadFlag" :link="row?.shortLinkWebsiteInfo.fullShortUrl" :width="132" :height="132" />
           </div>
           <!-- download qrcode img -->
           <div class="w-full h-auto mt-2">
@@ -95,7 +95,7 @@ async function copyFullShortUrl(text: string) {
           content="复制"
       >
         <el-icon size="20">
-          <Share @click="copyFullShortUrl('https://' + row?.shortLinkWebsiteInfo.fullShortUrl)" class="text-blue-400 cursor-pointer" />
+          <Share @click="copyFullShortUrl(row?.shortLinkWebsiteInfo.fullShortUrl as string)" class="text-blue-400 cursor-pointer" />
         </el-icon>
       </el-tooltip>
     </div>

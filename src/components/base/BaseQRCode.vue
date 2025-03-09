@@ -28,7 +28,7 @@ const flag = ref<boolean>(props.flag);
 function qrCodeGenerator() {
   if (qrcode.value) {
     if (props.link) {
-      QRCode.toCanvas(qrcode.value, 'https://' + props.link || "默认二维码内容填充", (error) => {
+      QRCode.toCanvas(qrcode.value, props.link || "默认二维码内容填充", (error) => {
         if (error) {
           LogUtil.error(error);
         }
