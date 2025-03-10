@@ -5,8 +5,7 @@ import {
   removeUserInfo,
 } from "@/componsables/apis/LoginPageApis.ts";
 import {useRoute, useRouter} from "vue-router";
-
-
+import { onMounted } from "vue";
 
 
 const router = useRouter();
@@ -61,6 +60,11 @@ async function checkLogin() {
 
 watch(() => route.path, async () => {
   // 监听路由变化，检查用户登录情况
+  await checkLogin();
+});
+
+// 首次挂载主页的时候检查登录情况，防止因为浏览器缓存等原因，导致用户在不登录的情况下访问主页
+onMounted(async () => {
   await checkLogin();
 });
 
