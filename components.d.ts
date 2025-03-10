@@ -57,4 +57,7 @@ declare module 'vue' {
     ShortLinkItem: typeof import('./src/components/shortlink/ShortLinkItem.vue')['default']
     SpaceAccessHistory: typeof import('./src/components/space/SpaceAccessHistory.vue')['default']
   }
+  export interface ComponentCustomProperties {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
+  }
 }

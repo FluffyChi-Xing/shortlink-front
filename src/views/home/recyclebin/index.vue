@@ -26,6 +26,8 @@ const response = ref<SpaceTypes.ShortLinkIPageType[]>([]);
 const current = ref<number>(1);
 const size = ref<number>(10);
 const gidList = ref<string>()
+const isLoading = ref<boolean>(false);
+const totalItem = ref<number>(0);
 
 
 /**
@@ -53,24 +55,42 @@ function getGidList() {
  * 获取回收站数据
  */
 async function getTableData() {
+  isLoading.value = true;
   await $api.getRecycleBinPage(
       getGidList(),
       current.value,
       size.value
   ).then((res: any) => {
-    $message({
-      type: 'info',
-      message: '获取成功'
-    });
+    // $message({
+    //   type: 'info',
+    //   message: '获取成功'
+    // });
     tableData.value = []; // 初始化数据
     tableData.value = spaceTableDataGenerator(res.list);
     recycleBinCount.value = res.total;
+    totalItem.value = res.total;
+    current.value = res.current;
+    size.value = res.size;
+    isLoading.value = false;
   }).catch((error: string) => {
     $message({
       type: 'error',
       message: error
     });
+    isLoading.value = false;
   });
+}
+
+
+/**
+ * 分页切换
+ * @param index
+ */
+async function changePage(index: number) {
+  if (index) {
+    current.value = index;
+    await getTableData();
+  }
 }
 
 
@@ -94,6 +114,7 @@ onMounted(async () => {
               class="w-full h-auto flex flex-col"
           >
             <el-table
+                v-loading="isLoading"
                 :data="tableData"
                 fit
                 stripe
@@ -162,7 +183,12 @@ onMounted(async () => {
           </div>
           <!-- footer pagination -->
           <div class="w-full h-16 mt-auto flex items-center justify-center">
-            <BasePagination />
+            <BasePagination
+                :total="totalItem"
+                :page-size="10"
+                :current-page="current"
+                @current-change="changePage"
+            />
           </div>
         </div>
       </template>

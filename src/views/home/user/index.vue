@@ -118,7 +118,7 @@ onMounted(async () => {
                      required
                  >
                    <el-input
-                       v-model="nickName"
+                       v-model="username"
                        placeholder="暂无用户名"
                        maxlength="20"
                        style="width: 240px;"
@@ -136,7 +136,7 @@ onMounted(async () => {
                  </el-form-item>
                  <el-form-item label="姓名" required>
                    <el-input
-                       v-model="username"
+                       v-model="nickName"
                        placeholder="暂无姓名"
                        maxlength="20"
                        style="width: 240px;"

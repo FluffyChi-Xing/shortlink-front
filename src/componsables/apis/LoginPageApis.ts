@@ -1,6 +1,6 @@
 import type {UserTypes} from "@/componsables/apis/UserTypes";
 import {$const} from "@/componsables/const.ts";
-import {$request, getUsername} from "@/componsables/request.ts";
+import {$request, getUsername, getUUID} from "@/componsables/request.ts";
 import {$enum} from "@/componsables/enums.ts";
 import {LogUtil} from "@/utils/CommonLogUtil.ts";
 
@@ -178,4 +178,30 @@ export async function checkUserLogin(): Promise<any> {
         })
     }
     return Promise.reject(false);
+}
+
+
+/**
+ * 用户退出登录
+ */
+export async function logout(): Promise<string> {
+    if (getUsername() && getUUID()) {
+        return await $request(
+            $const.ADMIN_SERVICE_PREFIX + `/user/logout?username=${getUsername()}&token=${getUUID()}`,
+            $enum.RestParamsEnums.GET,
+            null,
+            $const.SERVER_HOST
+        ).then((res: any) => {
+            if (res.code >= 200 && res.code < 300) {
+                return Promise.resolve('退出登录成功');
+            } else {
+                return Promise.reject('退出登录失败');
+            }
+        }).catch(error => {
+            LogUtil.error(error);
+            return Promise.reject('退出登录失败');
+        });
+    } else {
+        return Promise.reject('无法获取到用户信息');
+    }
 }

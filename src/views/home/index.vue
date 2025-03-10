@@ -178,6 +178,8 @@ async function createGroupHandler() {
       await getGroupList();
       // 关闭弹窗
       dialogVisible.value = false;
+      // 初始化分组名称
+      groupName.value = '';
     }).catch();
   } else {
     $message({
@@ -207,6 +209,12 @@ watch(() => route.path, () => {
  */
 watch(() => store.refreshFlag, async () => {
   await getGroupList();
+}, { deep: true });
+
+
+// 检查短链接分组顺序变动
+watch(() => groupList.value, async () => {
+  console.log(groupList.value);
 }, { deep: true });
 /** ======= 短链接分组-end ====== */
 </script>

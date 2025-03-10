@@ -2,6 +2,8 @@
 import {useRouter} from "vue-router";
 import {getUsername} from "../../componsables/request.ts";
 import {removeUserInfo} from "@/componsables/apis/LoginPageApis.ts";
+import {$api} from "@/componsables/api.ts";
+import {$message} from "@/componsables/element-plus.ts";
 
 withDefaults(defineProps<{
   username?: string;
@@ -16,10 +18,20 @@ const router = useRouter();
 /**
  * 退出登录
  */
-function logout() {
-  // TODO: 向后端发送退出请求
-  removeUserInfo(); // 移除用户登录信息
-  router.push('/login');
+async function logout() {
+  await $api.logout().then(async () => {
+    removeUserInfo(); // 移除用户登录信息
+    await router.push('/login');
+    $message({
+      type: 'success',
+      message: '退出登录成功'
+    });
+  }).catch(error => {
+    $message({
+      type: 'error',
+      message: error
+    });
+  });
 }
 </script>
 

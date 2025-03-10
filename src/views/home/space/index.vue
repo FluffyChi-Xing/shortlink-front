@@ -23,6 +23,7 @@ const currentPage = ref<number>(1);
 const currentSize = ref<number>(10);
 const currentGid = ref<string>('');
 const route = useRoute();
+const totalItem = ref<number>(0);
 
 
 /** ==================== 短连接分页管理页面-start ==================== */
@@ -42,8 +43,8 @@ const shortLinkIPageData = ref<SpaceTypes.ShortLinkIPageType[]>([]);
 function resetBindData() {
   tableData.value = [];
   shortLinkIPageData.value = [];
-  currentSize.value = pageSizes.value[1];
-  currentPage.value = 1;
+  // currentSize.value = pageSizes.value[1];
+  // currentPage.value = 1;
 }
 
 
@@ -53,14 +54,23 @@ function resetBindData() {
  */
 async function getTableData() {
   resetBindData(); // 重置数据
+  isLoading.value = true;
   await $api.getShortLinkPage(currentPage.value, currentSize.value, currentGid.value).then((res: any) => {
+    // 接受响应体列表 records 参数
     res.data.records.forEach((item: any) => {
       shortLinkIPageData.value.push(item);
     });
     tableData.value = spaceTableDataGenerator(shortLinkIPageData.value);
+    // 初始化 current 与 size
+    currentPage.value = res.data.current;
+    currentSize.value = res.data.size;
+    totalItem.value = res.data.total;
+    // 解说 loading
+    isLoading.value = false;
   }).catch((error: any) => {
     // LogUtil.error(error);
     console.log(error);
+    isLoading.value = false;
   })
 }
 
@@ -71,6 +81,7 @@ const shortLinkDescribe = ref<string>( );
 const shortLinkGroup = ref<string>();
 const shortLinkValidType = ref<string>('0');
 const validDate = ref<string>();
+const isLoading = ref<boolean>(false);
 
 /**
  * 编辑短链接窗口
@@ -348,7 +359,37 @@ async function handlerBatchCreateShortLink() {
 }
 // 短链接创建 -end
 // TODO: 处理编辑短链接弹窗 过期时间 选择的回显效果 shortLinkValidType & shortLinkValidDate
+/**
+ * 刷新数据
+ */
+async function refreshData() {
+  await getTableData();
+}
 
+
+/**
+ * 分页大小切换
+ * @param index
+ */
+async function sizeChange(index: number) {
+  // console.log(index)
+  if (index) {
+    currentSize.value = index;
+    await getTableData();
+  }
+}
+
+
+/**
+ * 分页切换
+ * @param index
+ */
+async function changePage(index: number) {
+  if (index) {
+    currentPage.value = index;
+    await getTableData();
+  }
+}
 
 onMounted(async () => {
   shortLinkGroupList.value = store.shortLinkGroup;
@@ -371,9 +412,14 @@ watch(() => route.params.groupName, async () => {
       <template #body>
         <div class="w-full h-full flex flex-col">
           <!-- functional banner -->
-          <div class="w-full h-auto flex py-2">
-            <el-button @click="createShortLinkHandler" type="primary">创建短链接</el-button>
-            <el-button @click="batchCreateShortLinkHandler" type="primary" plain>批量创建短链接</el-button>
+          <div class="w-full h-auto flex justify-between py-2">
+            <div class="w-auto h-full flex items-center">
+              <el-button @click="createShortLinkHandler" type="primary">创建短链接</el-button>
+              <el-button @click="batchCreateShortLinkHandler" type="primary" plain>批量创建短链接</el-button>
+            </div>
+            <div class="w-auto h-full flex items-center">
+              <el-button @click="refreshData" type="primary" plain>刷新</el-button>
+            </div>
           </div>
           <!-- table area -->
           <div
@@ -381,6 +427,7 @@ watch(() => route.params.groupName, async () => {
               class="w-full h-auto flex flex-col"
           >
             <el-table
+                v-loading="isLoading"
                 :data="tableData"
                 fit
                 stripe
@@ -452,10 +499,13 @@ watch(() => route.params.groupName, async () => {
           <div class="w-full h-16 flex justify-center items-center mt-auto">
             <BasePagination
                 v-model:current-page="currentPage"
+                :total="totalItem"
                 :background="false"
                 :page-sizes="pageSizes"
                 :page-size="10"
                 :layout="'total, sizes, prev, pager, next, jumper'"
+                @current-change="changePage"
+                @size-change="sizeChange"
             />
           </div>
         </div>

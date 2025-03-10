@@ -10,18 +10,6 @@ import BaseDialog from "@/components/base/BaseDialog.vue";
 
 const store = useCounterStore();
 const editFlag = ref<boolean>(false);
-const statsCardsList = ref<HomeTypes.HomeStatsInfoCardType[]>([
-  {
-    label: '分组数',
-    value: store.shortLinkGroup.length.toString(),
-    isShow: false
-  },
-  {
-    label: '短链数',
-    value: '0',
-    isShow: false
-  }
-]);
 </script>
 
 <template>
@@ -48,12 +36,12 @@ const statsCardsList = ref<HomeTypes.HomeStatsInfoCardType[]>([
     </div>
     <!-- stats cards list -->
     <div
-        class="w-full h-36 grid grid-cols-4 gap-4 items-center relative pr-4"
+        class="w-full h-auto min-h-4 grid grid-cols-4 gap-4 items-center relative pr-4"
     >
       <HomeStatsCard
-          v-for="(item, index) in statsCardsList"
+          v-for="(item, index) in store.statsCardsList"
           :key="index"
-          :params="item"
+          :info="item"
       />
       <!-- edit button -->
       <div class="w-auto h-auto absolute right-[-16px] top-0 cursor-pointer">
@@ -91,11 +79,11 @@ const statsCardsList = ref<HomeTypes.HomeStatsInfoCardType[]>([
     <template #body>
       <div class="w-full h-auto grid grid-cols-2 gap-4">
         <div
-            v-for="(item, index) in statsCardsList"
+            v-for="(item, index) in store.statsCardsList"
             :key="index"
             class="w-full h-auto flex flex-col rounded-[5px] border border-gray-400 p-4"
         >
-          <HomeStatsCard :params="item" :show="true" />
+          <HomeStatsCard :info="item" :show="true" />
           <el-divider />
           <el-switch
               v-model="item.isShow"
