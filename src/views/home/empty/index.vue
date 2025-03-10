@@ -1,15 +1,87 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import {ref, watch} from "vue";
 import BaseCard from "@/components/base/BaseCard.vue";
 import {useCounterStore} from "@/stores/counter.ts";
 import {Operation} from "@element-plus/icons-vue";
 import type {HomeTypes} from "@/componsables/apis/HomeTypes";
 import HomeStatsCard from "@/views/home/empty/components/HomeStatsCard.vue";
 import BaseDialog from "@/components/base/BaseDialog.vue";
+import dayjs from "dayjs";
+import {$api} from "@/componsables/api.ts";
+import {$message} from "@/componsables/element-plus.ts";
+import PvUvUipDailyCharts from "@/views/home/empty/components/PvUvUipDailyCharts.vue";
 
 
 const store = useCounterStore();
 const editFlag = ref<boolean>(false);
+const startDate = ref<string>('');
+const endDate = ref<string>('');
+const date = ref<string>('');
+const selectedGid = ref<string>('');
+const dailyStatsData = ref<HomeTypes.DailyAccessStatsType[]>([]);
+const dateList = ref<string[]>([]);
+const pvList = ref<number[]>([]);
+const uvList = ref<number[]>([]);
+const uipList = ref<number[]>([]);
+
+
+
+
+function initDateBinding() {
+  if (date.value && date.value.length === 2) {
+    startDate.value = dayjs(date.value[0]).format('YYYY-MM-DD');
+    endDate.value = dayjs(date.value[1]).format('YYYY-MM-DD');
+    // console.log(startDate.value, endDate.value, date.value);
+  }
+}
+
+
+function resetData() {
+  startDate.value = '';
+  endDate.value = '';
+  date.value = '';
+  selectedGid.value = '';
+  dailyStatsData.value = [];
+}
+
+
+/**
+ * 获取分组统计数据
+ */
+async function getDailyData() {
+  await $api.getDailyAccessStatsDataByGid(
+      startDate.value,
+      endDate.value,
+      selectedGid.value
+  ).then((res: any) => {
+    if (res?.length > 0) {
+      res.forEach((item: any) => {
+        dailyStatsData.value.push(item);
+        dateList.value.push(item.date);
+        pvList.value.push(item.pv);
+        uvList.value.push(item.uv);
+        uipList.value.push(item.uip);
+      });
+      $message({
+        type: 'success',
+        message: '获取成功'
+      });
+    } else {
+      dailyStatsData.value = [];
+    }
+  }).catch(error => {
+    $message({
+      type: 'error',
+      message: error
+    });
+    resetData(); // 初始化数据
+  });
+}
+
+
+watch(() => date.value, () => {
+  initDateBinding();
+});
 </script>
 
 <template>
@@ -58,14 +130,55 @@ const editFlag = ref<boolean>(false);
     </div>
     <!-- empty space -->
     <BaseCard
+        style="height: calc(100% - 300px);"
         class="w-full h-auto mt-4"
     >
       <template #body>
         <!-- empty space -->
-        <div class="w-full h-auto flex mt-4 items-center justify-center">
-          <el-empty
-              description="暂无数据"
-          />
+        <div
+            class="w-full h-full grid grid-cols-2 gap-4 items-center p-4 justify-center"
+        >
+          <!-- pv & uv & uip charts -->
+          <div class="w-full h-full flex flex-col">
+            <!-- date & group picker -->
+            <div class="w-full h-8 grid grid-cols-2 gap-4 justify-between items-center">
+              <!-- group selector -->
+              <div class="w-full h-auto flex">
+                <el-select
+                    v-model="selectedGid"
+                    placement="bottom"
+                    placeholder="请选择分组"
+                >
+                  <el-option
+                      v-for="(item, index) in store.shortLinkGroup"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.gid"
+                  />
+                </el-select>
+              </div>
+              <!-- date picker -->
+              <div class="w-full h-auto flex">
+                <el-date-picker
+                    v-model="date"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始时间"
+                    end-placeholder="结束时间"
+                />
+                <el-button @click="getDailyData" class="ml-4" type="primary">查询</el-button>
+              </div>
+            </div>
+            <!-- charts -->
+            <div style="height: calc(100% - 32px);" class="w-full h-auto flex">
+              <PvUvUipDailyCharts
+                  :date="dateList"
+                  :pv="pvList"
+                  :uv="uvList"
+                  :uip="uipList"
+              />
+            </div>
+          </div>
         </div>
       </template>
     </BaseCard>
