@@ -86,7 +86,10 @@ function handleDel(gid: number | string) {
   groupDel.value = true;
 }
 
-// TODO: 后端删除短链接分组接口存在异常，无法删除分组
+
+/**
+ * 删除空分组
+ */
 async function deleteShortLinkGroup() {
   await $api.deleteGroupItem(currentGroupIndex.value).then(async (res: string) => {
     $message({

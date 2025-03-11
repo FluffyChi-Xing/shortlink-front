@@ -6,6 +6,7 @@ import {getUsername} from "@/componsables/request.ts";
 import {getUserDesensitizationInfo} from "@/componsables/apis/UserApis.ts";
 import {$message} from "@/componsables/element-plus.ts";
 import {useCounterStore} from "@/stores/counter.ts";
+import {$api} from "@/componsables/api.ts";
 
 
 /** ======= 用户信息页面-start ====== */
@@ -23,6 +24,7 @@ const phone = ref<string>();
 const nickName = ref<string>();
 const password = ref<string>();
 const email = ref<string>();
+const isLoading = ref<boolean>(false);
 function resetData() {
   username.value = '';
   password.value = '';
@@ -38,6 +40,7 @@ async function getUserInfo() {
   // 如果缓存中不存在用户数据，那么就请求接口获取用户数据
   // 否则使用缓存数据，避免重复请求接口，提升用户体验
   if (!store.userInfo) {
+    isLoading.value = true;
     await getUserDesensitizationInfo().then((res: any) => {
       store.userInfo = {
         ...res
@@ -47,11 +50,13 @@ async function getUserInfo() {
       userInfo.phone = res?.phone;
       userInfo.username = res?.realName;
       // console.log(res)
+      isLoading.value = false;
     }).catch((error: any) => {
       $message({
         type: 'error',
         message: error
       });
+      isLoading.value = false;
     })
   }
 }
@@ -62,6 +67,9 @@ function cancel() {
 }
 
 
+/**
+ * 初始化数据绑定
+ */
 function initDataBinding() {
   // 如果缓存中存在用户数据，那么就使用缓存中的数据
   if (!store.userInfo) {
@@ -76,6 +84,47 @@ function initDataBinding() {
     email.value = store.userInfo.email;
   }
 }
+
+
+/**
+ * 更新用户信息
+ */
+async function updateUserInfoHandler() {
+  isLoading.value = true;
+  await $api.editUserData(
+      userInfo.username,
+      password.value as string,
+      phone.value as string,
+      email.value as string,
+      nickName.value as string
+  ).then(async () => {
+    $message({
+      type: 'success',
+      message: '修改成功'
+    });
+    // 将 store 中的用户信息置空，防止数据不一致
+    store.userInfo = {
+      username: '',
+      phone: '',
+      realName: '',
+      email: '',
+      userId: ''
+    };
+    // 重新拉取用户信息
+    await getUserInfo();
+    isLoading.value = false;
+    initDataBinding();
+    currentTabs.value = '0';
+  }).catch(error => {
+    isLoading.value = false;
+    $message({
+      type: 'error',
+      message: error
+    });
+  });
+}
+
+
 
 
 onMounted(async () => {
@@ -112,47 +161,55 @@ onMounted(async () => {
                label="基础信息"
            >
              <div class="w-full h-auto flex flex-col justify-center items-center">
-               <el-form label-width="auto">
-                 <el-form-item
-                     label="用户名"
-                     required
-                 >
-                   <el-input
-                       v-model="username"
-                       placeholder="暂无用户名"
-                       maxlength="20"
-                       style="width: 240px;"
-                       disabled
-                   />
-                 </el-form-item>
-                 <el-form-item label="手机号" required>
-                   <el-input
-                       v-model="phone"
-                       placeholder="暂无手机号"
-                       maxlength="11"
-                       style="width: 240px;"
-                       disabled
-                   />
-                 </el-form-item>
-                 <el-form-item label="姓名" required>
-                   <el-input
-                       v-model="nickName"
-                       placeholder="暂无姓名"
-                       maxlength="20"
-                       style="width: 240px;"
-                       disabled
-                   />
-                 </el-form-item>
-                 <el-form-item label="邮箱" required>
-                   <el-input
-                       v-model="email"
-                       placeholder="暂无邮箱"
-                       maxlength="50"
-                       style="width: 240px;"
-                       disabled
-                   />
-                 </el-form-item>
-               </el-form>
+               <el-skeleton
+                   :loading="isLoading"
+                   :rows="7"
+                   animated
+               >
+                 <template #default>
+                   <el-form label-width="auto">
+                     <el-form-item
+                         label="用户名"
+                         required
+                     >
+                       <el-input
+                           v-model="username"
+                           placeholder="暂无用户名"
+                           maxlength="20"
+                           style="width: 240px;"
+                           disabled
+                       />
+                     </el-form-item>
+                     <el-form-item label="手机号" required>
+                       <el-input
+                           v-model="phone"
+                           placeholder="暂无手机号"
+                           maxlength="11"
+                           style="width: 240px;"
+                           disabled
+                       />
+                     </el-form-item>
+                     <el-form-item label="姓名" required>
+                       <el-input
+                           v-model="nickName"
+                           placeholder="暂无姓名"
+                           maxlength="20"
+                           style="width: 240px;"
+                           disabled
+                       />
+                     </el-form-item>
+                     <el-form-item label="邮箱" required>
+                       <el-input
+                           v-model="email"
+                           placeholder="暂无邮箱"
+                           maxlength="50"
+                           style="width: 240px;"
+                           disabled
+                       />
+                     </el-form-item>
+                   </el-form>
+                 </template>
+               </el-skeleton>
              </div>
            </el-tab-pane>
            <el-tab-pane
@@ -204,7 +261,7 @@ onMounted(async () => {
                  </el-form-item>
                  <el-form-item>
                    <div class="w-full h-auto flex justify-end items-center">
-                     <el-button type="primary">确认</el-button>
+                     <el-button @click="updateUserInfoHandler" type="primary">确认</el-button>
                      <el-button type="info" @click="cancel">取消</el-button>
                    </div>
                  </el-form-item>

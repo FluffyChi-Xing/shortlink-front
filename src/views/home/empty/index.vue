@@ -10,8 +10,12 @@ import dayjs from "dayjs";
 import {$api} from "@/componsables/api.ts";
 import {$message} from "@/componsables/element-plus.ts";
 import PvUvUipDailyCharts from "@/components/stats/PvUvUipDailyCharts.vue";
-import {getRawAsset} from "node:sea";
 import BrowserStatsCharts from "@/components/stats/BrowserStatsCharts.vue";
+import {
+  initDailyBrowserStatsDataBinding,
+  initDailyStatsDataBinding,
+  initTopIPsStatsDataBinding
+} from "@/componsables/apis/ShortLinkStatsApis.ts";
 
 
 const store = useCounterStore();
@@ -61,11 +65,11 @@ async function getDailyData() {
       selectedGid.value
   ).then(async (res: any) => {
     // daily 数据初始化
-    await initDailyStatsDataBinding(res);
+    await initDailyStatsDataBinding(res, dailyStatsData.value, dateList.value, pvList.value, uvList.value, uipList.value);
     //浏览器数据初始化
-    await initDailyBrowserStatsDataBinding(res);
+    await initDailyBrowserStatsDataBinding(res, browserStatsList.value);
     // ip数据列表初始化
-    await initTopIPsStatsDataBinding(res);
+    await initTopIPsStatsDataBinding(res, ipTableData.value);
     isLoading.value = false;
   }).catch(error => {
     $message({
@@ -83,70 +87,70 @@ async function getDailyData() {
  * 初始化每日分组数据绑定
  * @param res
  */
-async function initDailyStatsDataBinding(res: any) {
-  if (res !== null && res !== undefined) {
-    // 日常数据统计初始化
-    // 防止res?.daily 是 null ,导致抛出 不可迭代的错误
-    let dailyCount = 0;
-    for (let dailyKey in res?.daily) {
-      dailyCount ++;
-    }
-    if (dailyCount > 0) {
-      res.daily.forEach((item: any) => {
-        dailyStatsData.value.push(item);
-        dateList.value.push(item.date);
-        pvList.value.push(item.pv);
-        uvList.value.push(item.uv);
-        uipList.value.push(item.uip);
-      });
-      $message({
-        type: 'success',
-        message: '获取成功'
-      });
-    } else {
-      dailyStatsData.value = [];
-    }
-  }
-}
+// async function initDailyStatsDataBinding(res: any) {
+//   if (res !== null && res !== undefined) {
+//     // 日常数据统计初始化
+//     // 防止res?.daily 是 null ,导致抛出 不可迭代的错误
+//     let dailyCount = 0;
+//     for (let dailyKey in res?.daily) {
+//       dailyCount ++;
+//     }
+//     if (dailyCount > 0) {
+//       res.daily.forEach((item: any) => {
+//         dailyStatsData.value.push(item);
+//         dateList.value.push(item.date);
+//         pvList.value.push(item.pv);
+//         uvList.value.push(item.uv);
+//         uipList.value.push(item.uip);
+//       });
+//       $message({
+//         type: 'success',
+//         message: '获取成功'
+//       });
+//     } else {
+//       dailyStatsData.value = [];
+//     }
+//   }
+// }
 
 
-async function initDailyBrowserStatsDataBinding(res: any) {
-  if (res !== null && res !== undefined) {
-    let browserCount = 0;
-    for (let browserStatsKey in res?.browserStats) {
-      browserCount ++;
-    }
-    // 浏览器数据初始化
-    if (browserCount > 0) {
-      res.browserStats.forEach((item: any) => {
-        browserStatsList.value.push(item);
-      });
-    } else {
-      browserStatsList.value = [];
-    }
-  }
-}
+// async function initDailyBrowserStatsDataBinding(res: any) {
+//   if (res !== null && res !== undefined) {
+//     let browserCount = 0;
+//     for (let browserStatsKey in res?.browserStats) {
+//       browserCount ++;
+//     }
+//     // 浏览器数据初始化
+//     if (browserCount > 0) {
+//       res.browserStats.forEach((item: any) => {
+//         browserStatsList.value.push(item);
+//       });
+//     } else {
+//       browserStatsList.value = [];
+//     }
+//   }
+// }
 
 
 /**
  * 初始化TopIPs数据绑定
  * @param res
  */
-async function initTopIPsStatsDataBinding(res: any) {
-  if (res !== null && res !== undefined) {
-    let ipCount = 0;
-    for (let topIpStatsKey in res.topIpStats) {
-      ipCount ++;
-    }
-    if (ipCount > 0) {
-      res.topIpStats.forEach((item: any) => {
-        ipTableData.value.push(item);
-      });
-    } else {
-      ipTableData.value = [];
-    }
-  }
-}
+// async function initTopIPsStatsDataBinding(res: any) {
+//   if (res !== null && res !== undefined) {
+//     let ipCount = 0;
+//     for (let topIpStatsKey in res.topIpStats) {
+//       ipCount ++;
+//     }
+//     if (ipCount > 0) {
+//       res.topIpStats.forEach((item: any) => {
+//         ipTableData.value.push(item);
+//       });
+//     } else {
+//       ipTableData.value = [];
+//     }
+//   }
+// }
 
 
 watch(() => date.value, async () => {
@@ -246,7 +250,10 @@ watch(() => date.value, async () => {
               <!-- pv & uv & uip charts -->
               <div class="w-full h-full flex flex-col">
                 <!-- charts -->
-                <div style="height: calc(100% - 32px);" class="w-full h-auto flex">
+                <div
+                    v-loading="isLoading"
+                    style="height: calc(100% - 32px);" class="w-full h-auto flex"
+                >
                   <PvUvUipDailyCharts
                       :date="dateList"
                       :pv="pvList"
@@ -258,7 +265,10 @@ watch(() => date.value, async () => {
               <!-- TopIPs & browser stats -->
               <div class="w-full h-full grid grid-cols-2 gap-4">
                 <!-- net work -->
-                <div class="w-full h-full flex">
+                <div
+                    v-loading="isLoading"
+                    class="w-full h-full flex"
+                >
                   <BrowserStatsCharts
                       :data="browserStatsList"
                   />

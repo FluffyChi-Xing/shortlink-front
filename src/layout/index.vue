@@ -43,7 +43,7 @@ const route = useRoute();
  */
 async function checkLogin() {
   await checkUserLogin().then((res: any) => {
-    console.log('检查登录状态:', res);
+    // console.log('检查登录状态:', res);
     if (!res) {
       // 未登录，跳转登录页面
       removeUserInfo();

@@ -21,7 +21,8 @@ const props = withDefaults(defineProps<{
   animation: 500,
   start: () => console.log("开始拖拽"),
   ended: () => console.log("拖拽结束"),
-  height: 388
+  height: 444,
+  list: () => []
 })
 </script>
 

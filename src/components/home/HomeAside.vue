@@ -56,7 +56,7 @@ function groupCreateHandler() {
         </div>
         <!-- default -->
         <div
-            style="height: calc(100% - 112px);"
+            style="height: calc(100% - 56px);"
             class="w-full h-auto flex flex-col"
         >
           <slot name="default" />

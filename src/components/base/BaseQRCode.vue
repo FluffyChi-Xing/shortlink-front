@@ -32,7 +32,7 @@ function qrCodeGenerator() {
         if (error) {
           LogUtil.error(error);
         }
-        LogUtil.info('QRCode generate !');
+        // LogUtil.info('QRCode generate !');
       })
     } else {
       LogUtil.alert('二维码连接不存在');
