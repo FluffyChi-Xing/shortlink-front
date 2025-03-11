@@ -16,6 +16,14 @@ import {useRoute} from "vue-router";
 import {useCounterStore} from "@/stores/counter.ts";
 import {$message} from "@/componsables/element-plus.ts";
 import dayjs from "dayjs";
+import type {HomeTypes} from "@/componsables/apis/HomeTypes";
+import {
+  initDailyBrowserStatsDataBinding,
+  initDailyStatsDataBinding,
+  initTopIPsStatsDataBinding
+} from "@/componsables/apis/ShortLinkStatsApis.ts";
+import PvUvUipDailyCharts from "@/components/stats/PvUvUipDailyCharts.vue";
+import BrowserStatsCharts from "@/components/stats/BrowserStatsCharts.vue";
 
 
 const pageSizes = ref<number[]>([5, 10, 15]);
@@ -24,6 +32,18 @@ const currentSize = ref<number>(10);
 const currentGid = ref<string>('');
 const route = useRoute();
 const totalItem = ref<number>(0);
+// 短链接统计数据
+const statsLoading = ref<boolean>(false);
+const statsDate = ref<string>();
+const startDate = ref<string>();
+const endDate = ref<string>();
+const pvList = ref<number[]>([]);
+const uvList = ref<number[]>([]);
+const uipList = ref<number[]>([]);
+const dateList = ref<string[]>([]);
+const browserStatsList = ref<HomeTypes.BrowserStatsType[]>([]);
+const dailyStatsList = ref<HomeTypes.DailyAccessStatsType[]>([]);
+const topIpList = ref<HomeTypes.TopIpStatsType[]>([]);
 
 
 /** ==================== 短连接分页管理页面-start ==================== */
@@ -322,7 +342,6 @@ async function createShortLink() {
 /**
  * 批量创建短链接处理函数
  */
-// TODO: 批量创建短链接接口异常
 async function handlerBatchCreateShortLink() {
   await $api.batchSaveShortLinkToGroup(
       batchCreateShortLinkUrl.value as string,
@@ -358,7 +377,6 @@ async function handlerBatchCreateShortLink() {
   });
 }
 // 短链接创建 -end
-// TODO: 处理编辑短链接弹窗 过期时间 选择的回显效果 shortLinkValidType & shortLinkValidDate
 /**
  * 刷新数据
  */
@@ -391,11 +409,81 @@ async function changePage(index: number) {
   }
 }
 
+
+/**
+ * 重置统计数据
+ */
+async function resetStatsData() {
+  startDate.value = '';
+  endDate.value = '';
+  statsDate.value = '';
+  pvList.value = [];
+  uvList.value = [];
+  uipList.value = [];
+  dailyStatsList.value = [];
+  statsLoading.value = false;
+  browserStatsList.value = [];
+  topIpList.value = [];
+}
+
+
+// 短链接统计 -start
+
+/**
+ * 获取短链接统计数据
+ */
+async function getShortLinkStats() {
+  statsLoading.value = true;
+  await $api.getSingleShortLinkStatsData(
+      currentRow.value?.shortLinkWebsiteInfo.fullShortUrl as string,
+      currentGid.value,
+      startDate.value as string,
+      endDate.value as string
+  ).then(async (res: any) => {
+    // $message({
+    //   type: 'success',
+    //   message: '获取成功'
+    // });
+    // 初始化每日统计数据
+    await initDailyStatsDataBinding(res, dailyStatsList.value, dateList.value, pvList.value, uvList.value, uipList.value);
+    // 初始化浏览器统计数据
+    await initDailyBrowserStatsDataBinding(res, browserStatsList.value);
+    // 初始化 ip 统计数据
+    await initTopIPsStatsDataBinding(res, topIpList.value);
+    statsLoading.value = false;
+  }).catch(async (error: string) => {
+    $message({
+      type: 'error',
+      message: error
+    });
+    await resetStatsData();
+  });
+}
+
+
+// 短链接统计 -end
+
+
 onMounted(async () => {
   shortLinkGroupList.value = store.shortLinkGroup;
   currentGid.value = route.params.groupName as string;
   await getTableData();
 })
+
+function initDateBinding() {
+  if (statsDate.value && statsDate.value.length === 2) {
+    startDate.value = dayjs(statsDate.value[0]).format('YYYY-MM-DD');
+    endDate.value = dayjs(statsDate.value[1]).format('YYYY-MM-DD');
+    // console.log(startDate.value, endDate.value, date.value);
+  }
+}
+
+
+function closeStatsDialog() {
+  resetStatsData();
+  statsFlag.value = false;
+}
+
 
 
 
@@ -403,6 +491,11 @@ watch(() => route.params.groupName, async () => {
   currentGid.value = route.params.groupName as string;
   await getTableData();
 })
+
+
+watch(() => statsDate.value, async () => {
+  await initDateBinding();
+});
 /** ==================== 短连接分页管理页面-end ==================== */
 </script>
 
@@ -519,14 +612,55 @@ watch(() => route.params.groupName, async () => {
       title="统计短链接"
   >
     <template #body>
-      <el-empty
-          description="暂无统计数据"
-      />
+      <div class="w-full h-[450px] flex flex-col">
+        <div class="w-full h-8 grid grid-cols-2 gap-4 items-center justify-end">
+          <div class="w-full h-full flex items-center">
+            <el-date-picker
+                v-model="statsDate"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始时间"
+                end-placeholder="结束时间"
+            />
+          </div>
+          <div class="w-full h-full justify-end flex">
+            <el-button type="primary" @click="getShortLinkStats">刷新</el-button>
+          </div>
+        </div>
+        <el-tabs>
+          <el-tab-pane label="每日访问数据" class="w-full h-full flex">
+            <div style="width: 568px;height: 364px;" class="flex">
+              <el-scrollbar class="w-full" height="364">
+                <div class="w-full h-full flex flex-col">
+                  <!-- 按日访问量 -->
+                  <PvUvUipDailyCharts
+                      v-model:visible="statsFlag"
+                      :date="dateList"
+                      :pv="pvList"
+                      :uip="uipList"
+                      :uv="uvList"
+                  />
+                  <!-- 浏览器类型占比 -->
+                  <BrowserStatsCharts
+                      v-model:visible="statsFlag"
+                      :data="browserStatsList"
+                  />
+                  <!-- top ip table -->
+                </div>
+              </el-scrollbar>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="历史访问记录">
+            <el-empty
+                description="暂无数据"
+            />
+          </el-tab-pane>
+        </el-tabs>
+      </div>
     </template>
     <template #footer>
       <div class="w-full h-auto flex items-center justify-end">
-        <el-button type="primary">确认</el-button>
-        <el-button @click="() => statsFlag = false" type="info">取消</el-button>
+        <el-button @click="closeStatsDialog" type="primary">关闭</el-button>
       </div>
     </template>
   </BaseDialog>
@@ -769,5 +903,8 @@ watch(() => route.params.groupName, async () => {
 </template>
 
 <style scoped>
-
+:deep(.el-scrollbar__view) {
+  width: 100%;
+  height: 100%;
+}
 </style>

@@ -82,7 +82,6 @@ export async function batchSaveShortLinkToGroup(
  * @param gid
  */
 
-// TODO: 后端区分有问题 删除的短连接 enableStatus 字段应该改为 1
 export async function removeShortLink2Bin(
     shortLink: string, // 完整短连接
     gid: string // 分组 id

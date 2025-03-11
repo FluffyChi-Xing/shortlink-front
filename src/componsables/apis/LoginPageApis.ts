@@ -69,13 +69,12 @@ export async function getCaptcha() {
 
 
 /**
- * TODO: 检查登录状态
  * @param username
  * @param token
  */
-export async function checkLogin(username: string, token: string) {
-    return null;
-}
+// export async function checkLogin(username: string, token: string) {
+//     return null;
+// }
 
 
 /**

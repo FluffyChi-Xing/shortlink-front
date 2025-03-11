@@ -97,7 +97,6 @@ export function getUUID(): string | null {
  */
 export function getToken() {
     let userInfo = localStorage.getItem($const.USER_LOGIN_STORAGE_KET);
-    // TODO: 调用验证 token 接口 以验证 token 是否过期，修改函数返回值为 boolean
     if (userInfo) {
         return JSON.parse(userInfo)?.token;
     } else {
@@ -110,11 +109,10 @@ export function getToken() {
  * 校验 token 是否过期
  * @param token
  */
-export function checkToken(token: string): boolean {
-    let flag: boolean = false;
-    if (token !== null && token !== undefined) {
-        // TODO: flag = checkTokenHandler(token);
-        return flag;
-    }
-    return flag;
-}
+// export function checkToken(token: string): boolean {
+//     let flag: boolean = false;
+//     if (token !== null && token !== undefined) {
+//         return flag;
+//     }
+//     return flag;
+// }

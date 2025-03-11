@@ -50,7 +50,6 @@ function getGidList() {
   return result;
 }
 
-// TODO: 回收站获取接口后端不应该返回 fullShortUrl 的 prefix -> http://
 /**
  * 获取回收站数据
  */

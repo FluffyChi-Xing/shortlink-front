@@ -6,8 +6,10 @@ import type {HomeTypes} from "@/componsables/apis/HomeTypes";
 
 const props = withDefaults(defineProps<{
   data?: HomeTypes.BrowserStatsType[];
+  visible?: boolean;
 }>(), {
   data: () => [],
+  visible: false
 })
 
 
@@ -26,12 +28,14 @@ const chartData = ref<NameValueType[]>([]);
  */
 function dataTransfer() {
   if (props.data.length > 0) {
+    // chartData.value = [];
     props.data.forEach((item: HomeTypes.BrowserStatsType) => {
       chartData.value.push({
         name: item.browser,
         value: item.cnt
       });
     });
+    // console.log(chartData.value)
   }
 }
 
@@ -39,7 +43,7 @@ function dataTransfer() {
 const option = {
   title: {
     text: '浏览器类型统计占比',
-    left: 'center'
+    left: 'left'
   },
   tooltip: {
     trigger: 'item'
@@ -73,6 +77,10 @@ async function initChart() {
     await dataTransfer(); // 转换数据
     const myChart = echarts.init(chart.value);
     myChart.setOption(option);
+    // 监听窗体大小变化
+    window.onresize = () => {
+      myChart.resize();
+    };
   }
 }
 
@@ -86,6 +94,12 @@ onMounted(async () => {
 watch(() => props.data, async () => {
   await initChart();
 }, { deep: true });
+
+
+// watch(() => props.visible, async () => {
+//   // await resetData();
+//   await initChart();
+// });
 </script>
 
 <template>

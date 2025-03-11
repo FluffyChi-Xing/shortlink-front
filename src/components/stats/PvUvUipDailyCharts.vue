@@ -7,12 +7,14 @@ const props = withDefaults(defineProps<{
   date?: string[];
   pv?: number[];
   uv?: number[];
-  uip?: number[]
+  uip?: number[];
+  visible?: boolean; // 窗口可见性
 }>(), {
   date: () => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-  pv: () => [0],
-  uv: () => [0],
-  uip: () => [0]
+  pv: () => [],
+  uv: () => [],
+  uip: () => [],
+  visible: false
 })
 
 
@@ -20,6 +22,7 @@ const pv = ref<number[]>(props.pv);
 const uv = ref<number[]>(props.uv);
 const uip = ref<number[]>(props.uip);
 const date = ref<string[]>(props.date);
+let myChart: echarts.ECharts | null = null;
 
 
 const chart = ref();
@@ -77,19 +80,27 @@ const option = {
   ]
 };
 
-
 /**
  * 初始化图表
  */
 async function initCharts() {
   if (chart.value) {
-    const myChart = echarts.init(chart.value);
+    // window.onresize = () => {
+    //   myChart?.resize();
+    // };
+    myChart = echarts.init(chart.value);
     myChart.setOption(option);
   }
 }
 
 
 async function resetDataBinding() {
+  // if (props.pv.length !== 0 || props.pv.length !== 0 || props.uip.length !== 0) {
+  //   pv.value = props.pv;
+  //   uv.value = props.uv;
+  //   uip.value = props.uip;
+  //   date.value = props.date;
+  // }
   pv.value = props.pv;
   uv.value = props.uv;
   uip.value = props.uip;
@@ -99,20 +110,15 @@ async function resetDataBinding() {
 
 
 onMounted(async () => {
+  // await resetDataBinding();
   await initCharts();
 });
 
-
+// TODO: 统计图加载尺寸错误 统计图数据不一致错误
 watch(() => props.date, async () => {
   await resetDataBinding();
   await initCharts();
 });
-
-
-watch(() => props.date, async () => {
-  await resetDataBinding();
-  await initCharts();
-}, { deep: true })
 </script>
 
 <template>
