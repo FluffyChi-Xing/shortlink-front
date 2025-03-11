@@ -30,7 +30,7 @@ export async function getDailyAccessStatsDataByGid(
             $const.BUSINESS_SERVER_HOST
         ).then((res: any) => {
             if (res.code >= 200 && res.code < 300) {
-                return Promise.resolve(res.data.daily);
+                return Promise.resolve(res.data);
             } else {
                 return Promise.reject('获取数据失败');
             }

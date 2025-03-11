@@ -1,0 +1,93 @@
+<script setup lang="ts">
+import {onMounted, ref, watch} from "vue";
+import * as echarts from "echarts";
+import type {HomeTypes} from "@/componsables/apis/HomeTypes";
+
+
+const props = withDefaults(defineProps<{
+  data?: HomeTypes.BrowserStatsType[];
+}>(), {
+  data: () => [],
+})
+
+
+interface NameValueType {
+  name: string;
+
+  value: number;
+}
+
+const chart = ref();
+const chartData = ref<NameValueType[]>([]);
+
+
+/**
+ * 类型转换函数
+ */
+function dataTransfer() {
+  if (props.data.length > 0) {
+    props.data.forEach((item: HomeTypes.BrowserStatsType) => {
+      chartData.value.push({
+        name: item.browser,
+        value: item.cnt
+      });
+    });
+  }
+}
+
+
+const option = {
+  title: {
+    text: '浏览器类型统计占比',
+    left: 'center'
+  },
+  tooltip: {
+    trigger: 'item'
+  },
+  // legend: {
+  //   orient: 'vertical',
+  //   left: 'right bottom'
+  // },
+  series: [
+    {
+      type: 'pie',
+      radius: '50%',
+      data: chartData.value,
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        }
+      }
+    }
+  ]
+};
+
+
+/**
+ * 初始化 统计图
+ */
+async function initChart() {
+  if (chart.value) {
+    await dataTransfer(); // 转换数据
+    const myChart = echarts.init(chart.value);
+    myChart.setOption(option);
+  }
+}
+
+
+onMounted(async () => {
+  await initChart();
+});
+
+
+
+watch(() => props.data, async () => {
+  await initChart();
+}, { deep: true });
+</script>
+
+<template>
+  <div ref="chart" class="w-full h-full flex" />
+</template>

@@ -62,7 +62,7 @@ watch(() => store.refreshFlag, () => {
 <template>
   <BaseCard
       v-show="info?.isShow || showFlag"
-      class="w-full h-[144px] hover:shadow-md cursor-pointer"
+      class="w-full h-[140px] hover:shadow-md cursor-pointer"
   >
     <template #body>
       <div class="w-full h-full flex flex-col p-4 items-center">
