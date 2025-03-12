@@ -80,7 +80,7 @@ async function copyFullShortUrl(text: string) {
         <template #default>
           <!-- qrcode -->
           <div class="w-full h-[132px] flex items-center">
-            <BaseQRCode :flag="downLoadFlag" :link="row?.shortLinkWebsiteInfo.fullShortUrl" :width="132" :height="132" />
+            <BaseQRCode :flag="downLoadFlag" :link="'http://' + row?.shortLinkWebsiteInfo.fullShortUrl" :width="132" :height="132" />
           </div>
           <!-- download qrcode img -->
           <div class="w-full h-auto mt-2">
