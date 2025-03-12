@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { debounce } from 'lodash';
 import HomeHeader from "@/components/home/HomeHeader.vue";
 import HomeAside from "@/components/home/HomeAside.vue";
 import HomeMenu from "@/components/home/HomeMenu.vue";
@@ -307,11 +308,13 @@ watch(() => store.refreshFlag, async () => {
 
 
 // 检查短链接分组顺序变动
-watch(() => groupList.value, async () => {
-  // 重新排列数组
-  await sortGroupList();
-  // await shortLinkGroupSortHandler();
-}, { deep: true });
+
+// watch(() => groupList.value, debounce(async () => {
+//   // 重新排列数组
+//   await sortGroupList();
+//   // 触发排序处理
+//   await shortLinkGroupSortHandler();
+// }, 300), { deep: true });
 /** ======= 短链接分组-end ====== */
 </script>
 
