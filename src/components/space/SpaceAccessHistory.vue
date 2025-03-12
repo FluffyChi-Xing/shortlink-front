@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type {SpaceTypes} from "@/componsables/apis/SpaceTypes.ts";
 import { ref } from "vue";
-import {timerFormat} from "../../utils/TimeUtil.ts";
-import {$enum} from "../../componsables/enums.ts";
+import {timerFormat} from "@/utils/TimeUtil.ts";
+import {$enum} from "@/componsables/enums.ts";
 import BasePagination from "@/components/base/BasePagination.vue";
 
 withDefaults(defineProps<{
   historyList?: SpaceTypes.spaceAccessHistoryListType[];
 }>(), {
-  historyList: null
+  historyList: () => []
 })
 
 

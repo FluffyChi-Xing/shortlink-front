@@ -10,14 +10,12 @@ const props = withDefaults(defineProps<{
 })
 
 
-const picUrl = ref<string>(props?.captchaUrl);
+const picUrl = ref<string>(props?.captchaUrl as string);
 const captcha = ref();
 const emits = defineEmits(['refresh']);
 
 /**
  * 验证码绘制api
- * @param width
- * @param height
  */
 function captchaGenerator() {
   if (picUrl.value !== null && picUrl.value !== undefined) {

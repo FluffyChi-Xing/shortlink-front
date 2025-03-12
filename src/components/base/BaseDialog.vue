@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {VNode} from "vue";
-import {onMounted, ref, watch} from "vue";
+import {ref, watch} from "vue";
 
 
 const props = withDefaults(defineProps<{

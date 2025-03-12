@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
-import {PieChart, Setting} from "@element-plus/icons-vue";
+import {Setting} from "@element-plus/icons-vue";
 import {useRouter} from "vue-router";
 import {$const} from "@/componsables/const.ts";
 const props = withDefaults(defineProps<{

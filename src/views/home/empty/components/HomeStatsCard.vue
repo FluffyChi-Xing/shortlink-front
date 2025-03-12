@@ -9,12 +9,12 @@ const props = withDefaults(defineProps<{
   info?: HomeTypes.HomeStatsInfoCardType;
   show?: boolean;
 }>(), {
-  show: false,
   info: {
     label: '',
     value: '',
     isShow: false
-  }
+  },
+  show: false,
 })
 
 

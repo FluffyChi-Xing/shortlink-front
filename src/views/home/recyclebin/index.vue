@@ -164,11 +164,11 @@ onMounted(async () => {
                   <ShortLinkCellUip :row="row" />
                 </template>
               </el-table-column>
-              <el-table-column label="操作" width="200" fixed="right">
+              <el-table-column label="操作" width="100" fixed="right">
                 <template #default="{ row }">
                   <div class="w-full h-auto flex justify-between">
-                    <el-button type="text" icon="PieChart">统计</el-button>
-                    <el-button type="text" icon="Setting">设置</el-button>
+<!--                    <el-button type="text" icon="PieChart">统计</el-button>-->
+<!--                    <el-button type="text" icon="Setting">设置</el-button>-->
                     <el-button type="text" icon="Delete">删除</el-button>
                   </div>
                 </template>

@@ -86,7 +86,7 @@ async function getDailyData() {
     // ip数据列表初始化
     await initTopIPsStatsDataBinding(res, ipTableData.value);
     isLoading.value = false;
-    console.log(dateList.value)
+    // console.log(dateList.value)
   }).catch(error => {
     $message({
       type: 'error',

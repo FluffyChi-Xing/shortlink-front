@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BaseCard from "@/components/base/BaseCard.vue";
-import {CirclePlus, Delete} from "@element-plus/icons-vue";
+import {CirclePlus} from "@element-plus/icons-vue";
 import {useRouter} from "vue-router";
 const props = withDefaults(defineProps<{
   count?: number;

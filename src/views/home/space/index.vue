@@ -316,7 +316,7 @@ async function createShortLink() {
       getWebsiteDomainByFullLink(createShortLinkOriginUrl.value),
       createShortLinkDescribe.value as string,
       createShortLinkOriginUrl.value as string
-  ).then(async (res: any) => {
+  ).then(async () => {
     $message({
       type: 'info',
       message: '创建成功'
@@ -329,7 +329,7 @@ async function createShortLink() {
     emitFreshPage();
     // 重新拉取分页
     await getTableData();
-  }).catch((error: any) => {
+  }).catch(() => {
     $message({
       type: 'error',
       message: '创建短链接失败'
@@ -352,7 +352,7 @@ async function handlerBatchCreateShortLink() {
       1,
       Number(batchCreateShortLinkValidType.value),
       dayjs(batchCreateShortLinkValidDate.value).format('YYYY-MM-DD')
-  ).then(async (res: any) => {
+  ).then(async () => {
     // 关闭窗口
     batchCreateFlag.value = false;
     // 显示结果
@@ -366,7 +366,7 @@ async function handlerBatchCreateShortLink() {
     await getTableData();
     // 刷新页面
     emitFreshPage();
-  }).catch((error: any) => {
+  }).catch(() => {
     // 关闭窗口
     batchCreateFlag.value = false;
     // 初始化参数
@@ -500,7 +500,7 @@ watch(() => route.params.groupName, async () => {
   await getTableData();
 })
 
-
+// TODO: 后端短链接列表分页获取 存在问题
 watch(() => statsDate.value, async () => {
   await initDateBinding();
 });

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onBeforeUnmount, onMounted, onUnmounted, ref} from "vue";
+import {onBeforeUnmount, onMounted, ref} from "vue";
 import {destroyVantaClient, vantaFactory} from "@/utils/VantaUtil.ts";
 import type {VantaJsTypes} from "@/componsables/apis/VantaJsTypes";
 import {VantaEnums} from "@/componsables/enums/VantaEnums.ts";
@@ -16,7 +16,7 @@ import {$message} from "@/componsables/element-plus.ts";
 
 /** ====== 登录-start ====== */
 const router = useRouter();
-const route = useRoute();
+// const route = useRoute();
 let vantaEffect: any = null;
 // 登录逻辑块
 const username = ref<string>();

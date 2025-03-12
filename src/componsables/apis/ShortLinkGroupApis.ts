@@ -1,8 +1,8 @@
 import {$request} from "@/componsables/request.ts";
 import {$const} from "@/componsables/const.ts";
 import {$enum} from "@/componsables/enums.ts";
-import {ADMIN_SERVICE_PREFIX} from "@/componsables/constants/LoginConstants.ts";
 import {LogUtil} from "@/utils/CommonLogUtil.ts";
+import type {ShortLinkTypes} from "@/componsables/apis/ShortLinkTypes";
 
 /**
  * 短链接分组 APIS
@@ -98,6 +98,35 @@ export async function updateShortLinkGroup(
         }).catch(error => {
             LogUtil.error(error);
             return Promise.reject("更新失败");
+        });
+    } else {
+        return Promise.reject('参数错误');
+    }
+}
+
+
+
+export async function sortShortLinkGroup(
+    requestParams: ShortLinkTypes.ShortLinkSortRequestType[] // 以 ， 分割的字符串
+):Promise<string> {
+    if (requestParams) {
+        // let formData = new FormData();
+        // formData.append('requestParams', JSON.stringify(requestParams));
+        return await $request(
+            $const.ADMIN_SERVICE_PREFIX + '/group/sort',
+            $enum.RestParamsEnums.POST,
+            JSON.stringify(requestParams),
+            $const.SERVER_HOST,
+            { 'Content-Type': 'application/json' }
+        ).then((res: any) => {
+            if (res.code >= 200 && res.code < 300) {
+                return Promise.resolve('更新成功');
+            } else {
+                return Promise.reject('更新失败');
+            }
+        }).catch(error => {
+            LogUtil.error(error);
+            return Promise.reject('更新失败');
         });
     } else {
         return Promise.reject('参数错误');

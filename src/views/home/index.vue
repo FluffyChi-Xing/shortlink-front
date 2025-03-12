@@ -10,7 +10,6 @@ import ShortLinkItem from "@/components/shortlink/ShortLinkItem.vue";
 import type {ShortLinkTypes} from "@/componsables/apis/ShortLinkTypes";
 import {$const} from "@/componsables/const.ts";
 import {useRoute} from "vue-router";
-import SpaceAccessHistory from "@/components/space/SpaceAccessHistory.vue";
 import {$api} from "@/componsables/api.ts";
 import {LogUtil} from "@/utils/CommonLogUtil.ts";
 import {useCounterStore} from "@/stores/counter.ts";
@@ -20,6 +19,7 @@ import {$message} from "@/componsables/element-plus.ts";
 
 const route = useRoute();
 const store = useCounterStore();
+const isLoading = ref<boolean>(false);
 /** ======= 分组创建窗口-start ====== */
 const dialogVisible = ref<boolean>(false);
 const groupName = ref<string>('');
@@ -38,12 +38,9 @@ const groupDel = ref<boolean>(false);
 const currentGroupIndex = ref<string | number>();
 // const groupCount = ref<number>(0);
 const groupList = ref<ShortLinkTypes.shortLinkGroupTypes[]>([]);
+const sortedGroupList = ref<ShortLinkTypes.shortLinkGroupTypes[]>([]); // 排序后的数组
+const sortRequestList = ref<ShortLinkTypes.ShortLinkSortRequestType[]>([]); // 以 , 分隔的字符串
 
-// 短链接统计事件
-// function handleStatistics(index: string | number) {
-//   groupStat.value = true;
-//   currentGroupIndex.value = index;
-// }
 // 短链接编辑事件
 function handleEdit(params: string[]) {
   groupName.value = params[0] as string;
@@ -134,13 +131,65 @@ function checkSelected() {
 
 
 /**
+ * 初始情况下的数组重拍
+ */
+async function resortList() {
+  sortedGroupList.value = [];
+  groupList.value.forEach((item: ShortLinkTypes.shortLinkGroupTypes, index: number) => {
+    sortedGroupList.value.push({
+      selected: false,
+      name: item.name,
+      sortOrder: index,
+      shortLinkCount: item.shortLinkCount,
+      gid: item.gid
+    });
+  });
+  groupList.value = [...sortedGroupList.value];
+}
+
+
+/**
+ * 正常情况下的数组顺序重排
+ */
+async function sortList() {
+  sortedGroupList.value = [];
+  sortedGroupList.value = groupList.value.sort((a, b) => a.sortOrder - b.sortOrder);
+  groupList.value = [...sortedGroupList.value];
+}
+
+
+/**
+ * 检查当前分组列表的排序情况
+ */
+async function sortGroupList() {
+  // 检查当前分组是否为初始情况 即 sortOrder 为 0,如果是，则按当前顺序从上到下给 sortOrder 赋值
+  if (groupList.value.length > 0) {
+    let zeroCount = 0;
+    groupList.value.some(item => {
+      if (item.sortOrder === 0) {
+        zeroCount ++;
+      }
+    })
+    if (zeroCount === groupList.value.length) {
+      // 按当前顺序排列赋值
+      await resortList();
+    } else {
+      // 否则按照 sortOrder 顺序赋值
+      await sortList();
+    }
+  }
+}
+
+/**
  * 获取短链接分组列表
  */
 async function getGroupList() {
-  await $api.getGroupList().then((res: any) => {
+  isLoading.value = true;
+  await $api.getGroupList().then(async (res: any) => {
     store.shortLinkGroup = []; // 每次重新获取分组时先清空，防止数据不一致
     groupListCount.value = 0;
     groupList.value = [];// 初始化分组列表
+    sortedGroupList.value = [];
     res.data.forEach((item: any) => {
       groupListCount.value += 1;
       groupList.value?.push({
@@ -154,9 +203,14 @@ async function getGroupList() {
         ...item,
         selected: false
       });
-    })
+    });
+    // 处理数组排序问题
+    await sortGroupList();
+    isLoading.value = false;
+    // console.log(sortedGroupList.value)
   }).catch(error => {
     LogUtil.error(error);
+    isLoading.value = false;
   })
 }
 
@@ -193,8 +247,45 @@ async function createGroupHandler() {
 }
 
 
-// 创建新的短链接分组-end
+/**
+ * 处理短链接分组排序
+ */
+/**
+ * 处理短链接分组排序
+ */
+async function shortLinkGroupSortHandler() {
+  // if (sortedGroupList.value.length > 0) {
+  //   sortRequestList.value = sortedGroupList.value.map((item: ShortLinkTypes.shortLinkGroupTypes) => ({
+  //     gid: item.gid,
+  //     sortOrder: item.sortOrder
+  //   }));
+  //   await $api.sortShortLinkGroup(sortRequestList.value)
+  //       .then(async () => {
+  //         // 初始化排序请求字符串
+  //         sortRequestList.value = [];
+  //         // 初始化排序后的数组
+  //         sortedGroupList.value = [];
+  //         // 重新获取分组列表
+  //         await getGroupList();
+  //       })
+  //       .catch(err => {
+  //         $message({
+  //           type: 'error',
+  //           message: err
+  //         });
+  //         sortRequestList.value = []; // 初始化排序请求字符串
+  //       });
+  // }
 
+
+  $message({
+    type: 'warning',
+    message: '暂未开放排序功能'
+  });
+}
+
+
+// 创建新的短链接分组-end
 
 
 onMounted(async () => {
@@ -217,7 +308,9 @@ watch(() => store.refreshFlag, async () => {
 
 // 检查短链接分组顺序变动
 watch(() => groupList.value, async () => {
-  // console.log(groupList.value);
+  // 重新排列数组
+  await sortGroupList();
+  // await shortLinkGroupSortHandler();
 }, { deep: true });
 /** ======= 短链接分组-end ====== */
 </script>
@@ -242,8 +335,10 @@ watch(() => groupList.value, async () => {
               <HomeMenu />
               <!-- short-link item draggable container -->
               <BaseDraggableComp
+                  v-loading="isLoading"
                   :list="groupList"
                   :sort="true"
+                  @drag-end="shortLinkGroupSortHandler"
               >
                 <template #component>
                   <ShortLinkItem

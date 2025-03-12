@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useRouter} from "vue-router";
-import {getUsername} from "../../componsables/request.ts";
+import {getUsername} from "@/componsables/request.ts";
 import {removeUserInfo} from "@/componsables/apis/LoginPageApis.ts";
 import {$api} from "@/componsables/api.ts";
 import {$message} from "@/componsables/element-plus.ts";

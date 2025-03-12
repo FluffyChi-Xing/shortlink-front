@@ -32,4 +32,14 @@ export namespace ShortLinkTypes {
 
         selected: boolean; // 是否选中
     }
+
+
+    /**
+     * 短链接分组排序类型
+     */
+    export interface ShortLinkSortRequestType {
+        gid: string;
+
+        sortOrder: number;
+    }
 }

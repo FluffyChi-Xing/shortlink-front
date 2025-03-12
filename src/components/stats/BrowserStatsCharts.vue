@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, reactive, ref, watch} from "vue";
+import {onMounted, reactive, ref, watch} from "vue";
 import * as echarts from "echarts";
 import type {HomeTypes} from "@/componsables/apis/HomeTypes";
 import { nextTick } from "vue";

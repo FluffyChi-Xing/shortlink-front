@@ -24,6 +24,10 @@ const props = withDefaults(defineProps<{
   height: 444,
   list: () => []
 })
+
+
+
+const emit = defineEmits(['drag-end']);
 </script>
 
 <template>
@@ -36,7 +40,7 @@ const props = withDefaults(defineProps<{
           :animation="animation"
           :sort="sort"
           @start="start"
-          @end="ended"
+          @end="() => emit('drag-end')"
       >
         <transition-group>
           <slot
