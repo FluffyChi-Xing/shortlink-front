@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/shortlink/business/v1/:path*",
+      "destination": "http://8.130.113.61:8001/shortlink/business/v1/:path*"
+    },
+    {
+      "source": "/api/shortlink/admin/v1/:path*",
+      "destination": "http://8.130.113.61:8082/shortlink/admin/v1/:path*"
+    }
+  ]
+}
