@@ -42,4 +42,26 @@ export namespace ShortLinkTypes {
 
         sortOrder: number;
     }
+
+
+
+    export interface ShortLinkAccessLogsType {
+        uvType: string;
+
+        browser: string;
+
+        os: string;
+
+        ip: string;
+
+        network: string;
+
+        device: string;
+
+        locale: string;
+
+        user: string;
+
+        createTime: string;
+    }
 }

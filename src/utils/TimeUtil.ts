@@ -1,8 +1,7 @@
 import dayjs from "dayjs";
 import {
     setWorkerTimeout,
-    setWorkerInterval,
-    clearWorkerTimer
+    setWorkerInterval
 } from 'set-worker-timer';
 
 export function timerFormat(date: string, format: string): any {
@@ -35,12 +34,3 @@ export function workerTimeout<T>(task: T, time: number) {
 export function workerInterval<T>(task: T, time: number) {
     return setWorkerInterval(() => task, time);
 }
-
-
-/**
- * 清除定时器
- * @param timer
- */
-// export function clearWorkerTimer<T>(timer: T) {
-//     clearWorkerTimer(timer);
-// }

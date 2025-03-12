@@ -5,7 +5,7 @@ import type {VantaJsTypes} from "@/componsables/apis/VantaJsTypes";
 import {VantaEnums} from "@/componsables/enums/VantaEnums.ts";
 import * as THREE from 'three';
 import BaseCard from "@/components/base/BaseCard.vue";
-import {useRoute, useRouter} from "vue-router";
+import {useRouter} from "vue-router";
 import {$const} from "@/componsables/const.ts";
 import BaseCaptcha from "@/components/base/BaseCaptcha.vue";
 import {$api} from "@/componsables/api.ts";
@@ -56,12 +56,11 @@ async function getCaptchaHandler() {
 
 
 async function handleRefreshCaptcha() {
-  console.log('刷新验证码');
+  // console.log('刷新验证码');
   await getCaptchaHandler();
 }
 
 async function handleLogin() {
-  // TODO: 表单校验
   // 组装 UserLoginReqDto
   let userLoginReqDto = {
     username: username.value as string,
@@ -188,7 +187,7 @@ onBeforeUnmount(() => {
           <div class="w-full text-white h-auto flex flex-col justify-center bg-theme-color items-center">
             <span>还没有账号?</span>
             <span>马上注册 !</span>
-            <el-button type="primary" plain class="mt-4">注册账号</el-button>
+            <el-button @click="() => $message({type: 'warning', message: '暂未开放注册'})" type="primary" plain class="mt-4">注册账号</el-button>
           </div>
         </div>
       </template>

@@ -95,6 +95,6 @@ export function vantaFactory(types: VantaEnums, options: VantaJsTypes.VantaFuncP
  * 销毁vanta 实例
  */
 export function destroyVantaClient(vantaClient: any) {
-    console.log("destroyVantaClient")
+    // console.log("destroyVantaClient")
     return vantaClient?.destroy();
 }

@@ -24,6 +24,7 @@ import {
 } from "@/componsables/apis/ShortLinkStatsApis.ts";
 import PvUvUipDailyCharts from "@/components/stats/PvUvUipDailyCharts.vue";
 import BrowserStatsCharts from "@/components/stats/BrowserStatsCharts.vue";
+import {$enum} from "../../../componsables/enums.ts";
 
 
 const pageSizes = ref<number[]>([5, 10, 15]);
@@ -58,6 +59,9 @@ const tableData = ref<SpaceTypes.ShortLinkIPageTableDataType[]>([]);
 const currentRow = ref<SpaceTypes.ShortLinkIPageTableDataType | null>(null);
 // 后端响应
 const shortLinkIPageData = ref<SpaceTypes.ShortLinkIPageType[]>([]);
+// 短链接访问历史记录信息列表
+const shortLinkAccessLogsList = ref<ShortLinkTypes.ShortLinkAccessLogsType[]>([]);
+const statsTabs = ref<string>('0');
 
 
 function resetBindData() {
@@ -437,6 +441,7 @@ async function resetStatsData() {
   uipList.value = [];
   browserStatsList.value = [];
   topIpList.value = [];
+  shortLinkAccessLogsList.value = [];
 }
 
 /**
@@ -444,6 +449,7 @@ async function resetStatsData() {
  */
 async function getShortLinkStats() {
   statsLoading.value = true;
+  // 获取单条短链接统计数据
   await $api.getSingleShortLinkStatsData(
       currentRow.value?.shortLinkWebsiteInfo.fullShortUrl as string,
       currentGid.value,
@@ -464,6 +470,21 @@ async function getShortLinkStats() {
       message: error
     });
     await resetData();
+  });
+  // 获取单条短链接访问历史信息
+  await $api.getShortLinkAccessLogs(
+      currentRow.value?.shortLinkWebsiteInfo.fullShortUrl as string,
+      currentGid.value,
+      startDate.value as string,
+      endDate.value as string
+  ).then((res: any) => {
+    shortLinkAccessLogsList.value = [];
+    shortLinkAccessLogsList.value = res;
+  }).catch(error => {
+    $message({
+      type: 'error',
+      message: error
+    });
   });
 }
 
@@ -490,6 +511,7 @@ function closeStatsDialog() {
   resetData();
   resetStatsData();
   statsFlag.value = false;
+  statsTabs.value = '0';
 }
 
 
@@ -584,7 +606,7 @@ watch(() => statsDate.value, async () => {
                 <template #default="{ row }">
                   <div class="w-full h-auto flex justify-between">
                     <el-button @click="statsShortLink(row)" type="text" icon="PieChart">统计</el-button>
-                    <el-button @click="editShortLink(row)" type="text" icon="Setting">设置</el-button>
+                    <el-button disabled @click="editShortLink(row)" type="text" icon="Setting">设置</el-button>
                     <el-button @click="delShortLink(row)" type="text" icon="Delete">删除</el-button>
                   </div>
                 </template>
@@ -635,8 +657,8 @@ watch(() => statsDate.value, async () => {
             <el-button type="primary" @click="getShortLinkStats">刷新</el-button>
           </div>
         </div>
-        <el-tabs>
-          <el-tab-pane label="每日访问数据" class="w-full h-full flex">
+        <el-tabs v-model="statsTabs">
+          <el-tab-pane name="0" label="每日访问数据" class="w-full h-full flex">
             <div style="width: 568px;height: 364px;" class="flex">
               <el-scrollbar class="w-full" height="364">
                 <div class="w-full h-full flex flex-col">
@@ -658,10 +680,61 @@ watch(() => statsDate.value, async () => {
               </el-scrollbar>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="历史访问记录">
-            <el-empty
-                description="暂无数据"
-            />
+          <el-tab-pane name="1" label="历史访问记录">
+            <el-scrollbar height="364" class="w-full">
+              <el-table
+                  :data="shortLinkAccessLogsList"
+                  fit
+                  stripe
+                  :row-style="{ height: '50px' }"
+                  :header-cell-style="{ background: '#EEF0F5', textAlign: 'center', color: 'black', fontWeight: 'bold' }"
+              >
+                <el-table-column
+                    label="访客类型"
+                    prop="uvType"
+                />
+                <el-table-column
+                    label="用户代号"
+                    prop="user"
+                />
+                <el-table-column
+                    label="IP地址"
+                    prop="ip"
+                />
+                <el-table-column
+                    label="浏览器类型"
+                    prop="browser"
+                />
+                <el-table-column
+                    label="操作系统"
+                    prop="os"
+                />
+                <el-table-column
+                    label="网络类型"
+                    prop="network"
+                />
+                <el-table-column
+                    label="访问设备"
+                    prop="device"
+                />
+                <el-table-column
+                    label="访客位置"
+                    prop="locale"
+                />
+                <el-table-column
+                    label="访问时间"
+                >
+                  <template #default="{ row }">
+                    {{ dayjs(row?.createTime as string).format($enum.TimeFormatEnum[0]) }}
+                  </template>
+                </el-table-column>
+                <template #empty>
+                  <el-empty
+                      description="暂无数据"
+                  />
+                </template>
+              </el-table>
+            </el-scrollbar>
           </el-tab-pane>
         </el-tabs>
       </div>

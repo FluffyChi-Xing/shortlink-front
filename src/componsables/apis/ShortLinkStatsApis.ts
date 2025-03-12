@@ -151,3 +151,44 @@ export async function initDateBinding(date: string, startDate: string, endDate: 
         endDate = dayjs(date[1]).format('YYYY-MM-DD');
     }
 }
+
+
+/**
+ * 获取短链接访问日志信息
+ * @param fullShortUrl
+ * @param gid
+ * @param startDate
+ * @param endDate
+ */
+export async function getShortLinkAccessLogs(
+    fullShortUrl: string,
+    gid: string,
+    startDate: string,
+    endDate: string
+): Promise<any> {
+    if (fullShortUrl && gid && startDate && endDate) {
+        let formData = new FormData();
+        formData.append('fullShortUrl', fullShortUrl);
+        formData.append('gid', gid);
+        formData.append('startDate', startDate);
+        formData.append('endDate', endDate);
+        formData.append('enableStatus', '0');
+        return $request(
+            $const.BUSINESS_SERVICE_PREFIX + '/stats/access-record',
+            $enum.RestParamsEnums.POST,
+            formData,
+            $const.BUSINESS_SERVER_HOST
+        ).then((res: any) => {
+            if (res.code >= 200 && res.code < 300) {
+                return Promise.resolve(res.data.records);
+            } else {
+                return Promise.reject('获取失败');
+            }
+        }).catch(error => {
+            LogUtil.error(error);
+            return Promise.reject('获取失败');
+        });
+    } else {
+        return Promise.reject('参数错误');
+    }
+}

@@ -110,3 +110,46 @@ export async function removeShortLink2Bin(
         return Promise.reject('参数错误');
     }
 }
+
+
+/**
+ * 更新短链接接口
+ * @param originUrl
+ * @param fullShortUrl
+ * @param gid
+ * @param originGid
+ * @param validDateType
+ * @param valiDate
+ * @param describe
+ */
+export async function updateShortLink(
+    originUrl: string,
+    fullShortUrl: string,
+    gid: string,
+    originGid: string,
+    validDateType: number,
+    valiDate: string,
+    describe: string
+): Promise<string> {
+    if (originGid && originUrl && fullShortUrl && gid && validDateType && valiDate && describe) {
+        let formData = new FormData();
+        formData.append('originUrl', originUrl);
+        formData.append('fullShortUrl', fullShortUrl);
+        formData.append('gid', gid);
+        formData.append('originGid', originGid);
+        formData.append('validdateType', validDateType.toString());
+        formData.append('valiDate', valiDate);
+        return await $request(
+            $const.BUSINESS_SERVICE_PREFIX + '/link/update',
+            $enum.RestParamsEnums.POST,
+            formData, $const.BUSINESS_SERVER_HOST
+        ).then(() => {
+            return Promise.resolve('更新成功');
+        }).catch(error => {
+            LogUtil.error(error);
+            return Promise.reject('更新失败');
+        });
+    } else {
+        return Promise.reject('参数错误');
+    }
+}
