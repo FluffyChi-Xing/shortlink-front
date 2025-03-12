@@ -32,18 +32,18 @@ function handleCreateGroup() {
 
 /** ======= 短链接分组-start ====== */
 const groupListCount = ref<number>(0);
-const groupStat = ref<boolean>(false);
+// const groupStat = ref<boolean>(false);
 const groupEdit = ref<boolean>(false);
 const groupDel = ref<boolean>(false);
 const currentGroupIndex = ref<string | number>();
-const groupCount = ref<number>(0);
+// const groupCount = ref<number>(0);
 const groupList = ref<ShortLinkTypes.shortLinkGroupTypes[]>([]);
 
 // 短链接统计事件
-function handleStatistics(index: string | number) {
-  groupStat.value = true;
-  currentGroupIndex.value = index;
-}
+// function handleStatistics(index: string | number) {
+//   groupStat.value = true;
+//   currentGroupIndex.value = index;
+// }
 // 短链接编辑事件
 function handleEdit(params: string[]) {
   groupName.value = params[0] as string;
@@ -217,7 +217,7 @@ watch(() => store.refreshFlag, async () => {
 
 // 检查短链接分组顺序变动
 watch(() => groupList.value, async () => {
-  console.log(groupList.value);
+  // console.log(groupList.value);
 }, { deep: true });
 /** ======= 短链接分组-end ====== */
 </script>
@@ -253,7 +253,6 @@ watch(() => groupList.value, async () => {
                       :count="item.shortLinkCount"
                       :selected="item.selected"
                       :gid="item.gid"
-                      @statistics="handleStatistics"
                       @edit="handleEdit"
                       @delete="handleDel"
                       @select="handleSelected"
@@ -298,34 +297,34 @@ watch(() => groupList.value, async () => {
     </template>
   </BaseDialog>
   <!-- short-link group statistics dialog -->
-  <BaseDialog
-      v-model:visible="groupStat"
-      :title="`统计 ${ currentGroupIndex } 分组的信息, 共计 ${ groupCount } 条短连`"
-      width="500"
-      :draggable="true"
-  >
-    <template #body>
-       <el-scrollbar height="400">
-         <div class="w-full h-full flex flex-col">
-           <el-tabs type="border-card" class="w-full">
-             <el-tab-pane label="访问数据">
-               <!-- 访问数据组件 -->
-             </el-tab-pane>
-             <el-tab-pane label="历史记录">
-               <!-- 历史记录组件 -->
-               <SpaceAccessHistory />
-             </el-tab-pane>
-           </el-tabs>
-         </div>
-       </el-scrollbar>
-    </template>
-    <template #footer>
-      <div class="w-full h-auto flex justify-end items-center">
-        <el-button type="primary">确认</el-button>
-        <el-button @click="() => groupStat = false" type="info">取消</el-button>
-      </div>
-    </template>
-  </BaseDialog>
+<!--  <BaseDialog-->
+<!--      v-model:visible="groupStat"-->
+<!--      :title="`统计 ${ currentGroupIndex } 分组的信息, 共计 ${ groupCount } 条短连`"-->
+<!--      width="500"-->
+<!--      :draggable="true"-->
+<!--  >-->
+<!--    <template #body>-->
+<!--       <el-scrollbar height="400">-->
+<!--         <div class="w-full h-full flex flex-col">-->
+<!--           <el-tabs type="border-card" class="w-full">-->
+<!--             <el-tab-pane label="访问数据">-->
+<!--               &lt;!&ndash; 访问数据组件 &ndash;&gt;-->
+<!--             </el-tab-pane>-->
+<!--             <el-tab-pane label="历史记录">-->
+<!--               &lt;!&ndash; 历史记录组件 &ndash;&gt;-->
+<!--               <SpaceAccessHistory />-->
+<!--             </el-tab-pane>-->
+<!--           </el-tabs>-->
+<!--         </div>-->
+<!--       </el-scrollbar>-->
+<!--    </template>-->
+<!--    <template #footer>-->
+<!--      <div class="w-full h-auto flex justify-end items-center">-->
+<!--        <el-button type="primary">确认</el-button>-->
+<!--        <el-button @click="() => groupStat = false" type="info">取消</el-button>-->
+<!--      </div>-->
+<!--    </template>-->
+<!--  </BaseDialog>-->
   <!-- short-link group edit dialog -->
   <BaseDialog
       v-model:visible="groupEdit"

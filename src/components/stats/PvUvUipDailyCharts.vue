@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {onMounted, ref, watch} from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import * as echarts from "echarts";
-
+import { nextTick } from "vue";
 
 const props = withDefaults(defineProps<{
   date?: string[];
@@ -15,19 +15,12 @@ const props = withDefaults(defineProps<{
   uv: () => [],
   uip: () => [],
   visible: false
-})
+});
 
-
-const pv = ref<number[]>(props.pv);
-const uv = ref<number[]>(props.uv);
-const uip = ref<number[]>(props.uip);
-const date = ref<string[]>(props.date);
 let myChart: echarts.ECharts | null = null;
-
-
 const chart = ref();
 
-const option = {
+const option = reactive({
   title: {
     text: '分组统计数据'
   },
@@ -48,12 +41,10 @@ const option = {
       saveAsImage: {}
     }
   },
-  // 取消注释并修正 xAxis 配置
   xAxis: {
-    // 修正 type 为 'category'
     type: 'category',
     boundaryGap: false,
-    data: date.value
+    data: props.date
   },
   yAxis: {
     type: 'value'
@@ -63,66 +54,68 @@ const option = {
       name: 'pv',
       type: 'line',
       stack: 'Total',
-      data: pv.value
+      data: props.pv
     },
     {
       name: 'uv',
       type: 'line',
       stack: 'Total',
-      data: uv.value
+      data: props.uv
     },
     {
       name: 'uip',
       type: 'line',
       stack: 'Total',
-      data: uip.value
+      data: props.uip
     }
   ]
-};
+});
 
-/**
- * 初始化图表
- */
-async function initCharts() {
+async function initChartRender() {
   if (chart.value) {
-    // window.onresize = () => {
-    //   myChart?.resize();
-    // };
     myChart = echarts.init(chart.value);
     myChart.setOption(option);
+    window.onresize = () => {
+      myChart?.resize();
+    }
+    await nextTick();
+    myChart.resize();
   }
 }
 
 
-async function resetDataBinding() {
-  // if (props.pv.length !== 0 || props.pv.length !== 0 || props.uip.length !== 0) {
-  //   pv.value = props.pv;
-  //   uv.value = props.uv;
-  //   uip.value = props.uip;
-  //   date.value = props.date;
-  // }
-  pv.value = props.pv;
-  uv.value = props.uv;
-  uip.value = props.uip;
-  date.value = props.date;
+async function resetData() {
+  option.xAxis.data = [];
+  option.series[0].data = [];
+  option.series[1].data = [];
+  option.series[2].data = [];
 }
 
-
+async function updateChartData() {
+  await resetData();
+  option.xAxis.data = [...props.date];
+  option.series[0].data = [...props.pv];
+  option.series[1].data = [...props.uv];
+  option.series[2].data = [...props.uip];
+  if (myChart) {
+    myChart.setOption(option);
+  }
+}
 
 onMounted(async () => {
-  // await resetDataBinding();
-  await initCharts();
+  await initChartRender();
 });
 
-// TODO: 统计图加载尺寸错误 统计图数据不一致错误
-watch(() => props.date, async () => {
-  await resetDataBinding();
-  await initCharts();
+watch(() => [props.date, props.pv, props.uv, props.uip], async () => {
+  await updateChartData();
+}, {
+  deep: true,
+  immediate: true
 });
 </script>
 
 <template>
-  <div ref="chart" class="w-full h-full flex items-center" />
+  <div ref="chart" class="w-full h-full flex" />
 </template>
 
 <style scoped>

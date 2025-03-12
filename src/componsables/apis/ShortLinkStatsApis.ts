@@ -87,10 +87,10 @@ export async function initDailyStatsDataBinding(
                 uvList.push(item.uv);
                 uipList.push(item.uip);
             });
-            $message({
-                type: 'success',
-                message: '获取成功'
-            });
+            // $message({
+            //     type: 'success',
+            //     message: '获取成功'
+            // });
         } else {
             dailyStatsData = [];
         }

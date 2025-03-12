@@ -179,6 +179,8 @@ function statsShortLink(row: SpaceTypes.ShortLinkIPageTableDataType) {
   statsFlag.value = true;
   currentRow.value = row;
   statsShortLinkName.value = row?.shortLinkInfo.describe ? row?.shortLinkInfo.describe : '未知短链';
+  resetData();
+  resetStatsData();
 }
 
 // 统计短链接 -end
@@ -413,21 +415,29 @@ async function changePage(index: number) {
 /**
  * 重置统计数据
  */
-async function resetStatsData() {
+async function resetData() {
   startDate.value = '';
   endDate.value = '';
   statsDate.value = '';
-  pvList.value = [];
-  uvList.value = [];
-  uipList.value = [];
-  dailyStatsList.value = [];
   statsLoading.value = false;
-  browserStatsList.value = [];
-  topIpList.value = [];
 }
 
 
 // 短链接统计 -start
+
+
+/**
+ * 重置统计数据
+ */
+async function resetStatsData() {
+  dailyStatsList.value = [];
+  dateList.value = [];
+  pvList.value = [];
+  uvList.value = [];
+  uipList.value = [];
+  browserStatsList.value = [];
+  topIpList.value = [];
+}
 
 /**
  * 获取短链接统计数据
@@ -440,10 +450,7 @@ async function getShortLinkStats() {
       startDate.value as string,
       endDate.value as string
   ).then(async (res: any) => {
-    // $message({
-    //   type: 'success',
-    //   message: '获取成功'
-    // });
+    await resetStatsData();
     // 初始化每日统计数据
     await initDailyStatsDataBinding(res, dailyStatsList.value, dateList.value, pvList.value, uvList.value, uipList.value);
     // 初始化浏览器统计数据
@@ -456,7 +463,7 @@ async function getShortLinkStats() {
       type: 'error',
       message: error
     });
-    await resetStatsData();
+    await resetData();
   });
 }
 
@@ -480,6 +487,7 @@ function initDateBinding() {
 
 
 function closeStatsDialog() {
+  resetData();
   resetStatsData();
   statsFlag.value = false;
 }

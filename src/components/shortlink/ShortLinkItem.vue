@@ -82,19 +82,19 @@ watch(() => props?.count, () => {
           :class="flag ? 'flex' : 'hidden'"
           class="w-full h-full font-bold justify-end items-center overflow-hidden"
       >
-        <el-tooltip
-            effect="dark"
-            content="统计"
-            placement="bottom"
-        >
-          <el-icon
-              @click="emits('statistics', props?.groupName)"
-              :size="16"
-              class="mr-2"
-          >
-            <PieChart class="hover:text-theme-color cursor-pointer" />
-          </el-icon>
-        </el-tooltip>
+<!--        <el-tooltip-->
+<!--            effect="dark"-->
+<!--            content="统计"-->
+<!--            placement="bottom"-->
+<!--        >-->
+<!--          <el-icon-->
+<!--              @click="emits('statistics', props?.groupName)"-->
+<!--              :size="16"-->
+<!--              class="mr-2"-->
+<!--          >-->
+<!--            <PieChart class="hover:text-theme-color cursor-pointer" />-->
+<!--          </el-icon>-->
+<!--        </el-tooltip>-->
         <el-dropdown>
           <el-icon :size="16">
             <Setting class="hover:text-theme-color" />

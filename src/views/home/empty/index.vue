@@ -55,6 +55,20 @@ function resetData() {
 
 
 /**
+ * 重置统计数据
+ */
+async function resetStatsData() {
+  dailyStatsData.value = [];
+  pvList.value = [];
+  uvList.value = [];
+  uipList.value = [];
+  ipTableData.value = [];
+  browserStatsList.value = [];
+  dateList.value = [];
+}
+
+
+/**
  * 获取分组统计数据
  */
 async function getDailyData() {
@@ -64,6 +78,7 @@ async function getDailyData() {
       endDate.value,
       selectedGid.value
   ).then(async (res: any) => {
+    await resetStatsData();
     // daily 数据初始化
     await initDailyStatsDataBinding(res, dailyStatsData.value, dateList.value, pvList.value, uvList.value, uipList.value);
     //浏览器数据初始化
@@ -71,6 +86,7 @@ async function getDailyData() {
     // ip数据列表初始化
     await initTopIPsStatsDataBinding(res, ipTableData.value);
     isLoading.value = false;
+    console.log(dateList.value)
   }).catch(error => {
     $message({
       type: 'error',
@@ -81,76 +97,6 @@ async function getDailyData() {
     console.log(error);
   });
 }
-
-
-/**
- * 初始化每日分组数据绑定
- * @param res
- */
-// async function initDailyStatsDataBinding(res: any) {
-//   if (res !== null && res !== undefined) {
-//     // 日常数据统计初始化
-//     // 防止res?.daily 是 null ,导致抛出 不可迭代的错误
-//     let dailyCount = 0;
-//     for (let dailyKey in res?.daily) {
-//       dailyCount ++;
-//     }
-//     if (dailyCount > 0) {
-//       res.daily.forEach((item: any) => {
-//         dailyStatsData.value.push(item);
-//         dateList.value.push(item.date);
-//         pvList.value.push(item.pv);
-//         uvList.value.push(item.uv);
-//         uipList.value.push(item.uip);
-//       });
-//       $message({
-//         type: 'success',
-//         message: '获取成功'
-//       });
-//     } else {
-//       dailyStatsData.value = [];
-//     }
-//   }
-// }
-
-
-// async function initDailyBrowserStatsDataBinding(res: any) {
-//   if (res !== null && res !== undefined) {
-//     let browserCount = 0;
-//     for (let browserStatsKey in res?.browserStats) {
-//       browserCount ++;
-//     }
-//     // 浏览器数据初始化
-//     if (browserCount > 0) {
-//       res.browserStats.forEach((item: any) => {
-//         browserStatsList.value.push(item);
-//       });
-//     } else {
-//       browserStatsList.value = [];
-//     }
-//   }
-// }
-
-
-/**
- * 初始化TopIPs数据绑定
- * @param res
- */
-// async function initTopIPsStatsDataBinding(res: any) {
-//   if (res !== null && res !== undefined) {
-//     let ipCount = 0;
-//     for (let topIpStatsKey in res.topIpStats) {
-//       ipCount ++;
-//     }
-//     if (ipCount > 0) {
-//       res.topIpStats.forEach((item: any) => {
-//         ipTableData.value.push(item);
-//       });
-//     } else {
-//       ipTableData.value = [];
-//     }
-//   }
-// }
 
 
 watch(() => date.value, async () => {
